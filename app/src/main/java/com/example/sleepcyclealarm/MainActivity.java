@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
         startAlarm(c);
         updateAlarmStatus(c);
-
     }
 
     private void updateAlarmStatus(Calendar c){
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent,0);
 
-        if(c.before(Calendar.getInstance())){
+        if(c.before(Calendar.getInstance())){ //add 1 day to the input time if the user picks a time which is before the current time
             c.add(Calendar.DATE,1);
         }
 
