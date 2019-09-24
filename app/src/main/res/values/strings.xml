@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Sleep cycle alarm</string>
+    <string name="simple_alarm_clock">Simple alarm clock</string>
+    <string name="pick_time">pick_time</string>
+    <string name="switch_on_off">Switch</string>
+    <string name="off_on">OFF-ON</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="alaram_on">Alaram ON</string>
+    <string name="alarm_on">Alarm ON</string>
+    <string name="alarm_off">Alarm OFF</string>
+    <string name="textview">TextView</string>
+    <string name="no_alarm_set">No alarm set</string>
+    <string name="button">Button</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="wake_up">WAKE UP!</string>
+</resources>
