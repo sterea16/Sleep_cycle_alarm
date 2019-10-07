@@ -8,8 +8,8 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,11 +25,12 @@ import java.util.Calendar;
 
 
 public class MainActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
-    private Button alarmButtonON, alarmButtonOFF;
-    private TextView dateView, alarm_status;
+    private Button alarmButtonON, alarmButtonOFF, sleepingNOW;
+    private TextView dateView, alarm_status, goToSleepTime_text1;
     private Calendar calendar;
     private SimpleDateFormat dateFormat;
     private String date;
+    private final int oneSleepCycle = 90; //minutes
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         date = dateFormat.format(calendar.getTime());
         dateView.setText(date);
 
+        goToSleepTime_text1 = findViewById(R.id.goTosleepTime_text1);
         alarm_status = findViewById(R.id.alarm_status);
         alarm_status.setText("No alarm set");
         alarmButtonON = findViewById(R.id.alarmButtonOn);
@@ -62,6 +64,14 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                 CancelAlarm();
             }
         });
+
+        sleepingNOW = findViewById(R.id.sleepNow);
+        sleepingNOW.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getWakeUpTime();
+            }
+        });
     }
 
     @Override
@@ -73,6 +83,10 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 
         startAlarm(c);
         updateAlarmStatus(c);
+        c.add(Calendar.MINUTE,-(5*oneSleepCycle));
+        String text ="To get 5 full sleep cycles you should fall asleep at <i> <font color = red>" + DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime())
+                + "</font> </i>.<br /> Note that the average time to fall asleep is <i>14 minutes</i>.";
+        updateGoToSleepText(text);//this will tell the user when is the right time to fall asleep
     }
 
     private void updateAlarmStatus(Calendar c){
@@ -80,7 +94,21 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         alarmStatusText += DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
         alarm_status.setText(alarmStatusText);
         alarmButtonON.setText("Alarm is set");
-        alarmButtonON.setBackgroundResource(R.color.green);
+    }
+
+    private void updateGoToSleepText(String text){
+        goToSleepTime_text1.setText(Html.fromHtml(text));
+    }
+
+    private void getWakeUpTime(){ // gets the right time for wake up
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.SECOND,0);
+        c.add(Calendar.MINUTE,1);// for the sake of testing, the alarm will ring after 1 minute starting from the moment the user presses the button; normally it must by at least 450 minutes.
+        startAlarm(c);
+        updateAlarmStatus(c);
+        String text = "If you are going to sleep right now you will get 5 full sleep cycle at <i><font color = red>" + DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime())
+                    +"</i></font>.";
+        updateGoToSleepText(text);
     }
 
     private void startAlarm (Calendar c){
@@ -103,12 +131,13 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent,0);
         alarmManager.cancel(pendingIntent);
-        int duration = Toast.LENGTH_LONG;
+        int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(this,"Alarm canceled", duration);
         toast.show();
         alarm_status.setText("No alarm set");
         alarmButtonON.setText("Set alarm");
-        alarmButtonON.setBackgroundColor(Color.LTGRAY);
+        String text ="";
+        updateGoToSleepText(text);
     }
 
 }

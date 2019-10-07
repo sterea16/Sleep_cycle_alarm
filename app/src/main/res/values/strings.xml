@@ -14,4 +14,5 @@
     <string name="button">Button</string>
     <string name="dismiss">Dismiss</string>
     <string name="wake_up">WAKE UP!</string>
+    <string name="sleeping_now">Sleeping now</string>
 </resources>

@@ -18,4 +18,5 @@ public class AlarmReceiver extends BroadcastReceiver{
         intent = new Intent(context,AlarmActivity.class);
         context.startActivity(intent);
     }
+
 }
