@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.sleepcyclealarm">
+    package="com.sterea.sleepcyclealarm">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -16,7 +16,9 @@
         <activity android:name=".AlarmActivity">
 
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
