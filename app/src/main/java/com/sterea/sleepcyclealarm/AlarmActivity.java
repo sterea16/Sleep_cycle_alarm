@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-
 public class AlarmActivity extends AppCompatActivity {
     public TextView textWakeUp;
     public Ringtone r ;
@@ -22,7 +21,7 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_alarm);
+        setContentView(R.layout.activity_alarm_layout);
 
         //pops out the activity even if the phone is on lock screen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
@@ -46,6 +45,8 @@ public class AlarmActivity extends AppCompatActivity {
             }
         });
     }
+
+    //TODO override the onDestroy method to remove the activity after the dismiss button has been added
 
 
 }
