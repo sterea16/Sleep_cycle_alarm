@@ -9,25 +9,17 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.sterea.sleepcyclealarm.Model.Alarm.AlarmReceiver;
+import com.sterea.sleepcyclealarm.model.alarm.AlarmReceiver;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -102,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     private void getWakeUpTime(){ // gets the right time for wake up
         Calendar c = Calendar.getInstance();
         c.set(Calendar.SECOND,0);
-        c.add(Calendar.MINUTE,6*90);// for the sake of testing, the alarm will ring after 1 minute starting from the moment the user presses the button; normally it must by at least 450 minutes.
+        c.add(Calendar.MINUTE,6*90);
         startAlarm(c);
         updateAlarmStatus(c);
         String text = "If you are going to sleep right now you will get 6 full sleep cycle at <i><font color = red>" + DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime())
@@ -128,163 +120,9 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     public void onClickAddAlarm(View view){
         /*DialogFragment timePicker = new TimePickerFragment();
         timePicker.show(getSupportFragmentManager(),"time picker");*/
-        dialog_wake_up_time = new Dialog(this);
-        dialog_wake_up_time.setContentView(R.layout.alarm_dialog_layout);
 
-        Button create_alarm = (Button) dialog_wake_up_time.findViewById(R.id.create_alarm_wake_up_time);
-        Button cancel_create = (Button) dialog_wake_up_time.findViewById(R.id.cancel_alarm_wake_up_time);
-        ImageButton choose_song = (ImageButton) dialog_wake_up_time.findViewById(R.id.choose_song_dialog);
-
-        dialog_wake_up_time.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog_wake_up_time.show();
-
-        create_alarm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimePicker t = dialog_wake_up_time.findViewById(R.id.spinner_time_picker);
-                int hour, minute;
-                if(Build.VERSION.SDK_INT < 23){
-                    hour = t.getCurrentHour();
-                    minute = t.getCurrentMinute();
-                } else {
-                    hour = t.getHour();
-                    minute = t.getMinute();
-                }
-                onTimeSet(t, hour, minute);
-                dialog_wake_up_time.dismiss();
-            }
-        });
-        cancel_create.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                dialog_wake_up_time.dismiss();
-            }
-        });
-        choose_song.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                openSongListDialog();
-            }
-        });
-    }
-
-    public void openSongListDialog(){
-        dialog_choose_song = new Dialog(MainActivity.this);
-        dialog_choose_song.setContentView(R.layout.song_list_layout);
-
-        FloatingActionButton confirm_song = dialog_choose_song.findViewById(R.id.confirm_song);
-        RadioGroup radioGroup = dialog_choose_song.findViewById(R.id.group_radio_songs);
-        int checkedRadioButtonId = radioGroup.getCheckedRadioButtonId();
-        playOrPauseSelectedSong(checkedRadioButtonId);
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(mediaPlayer!= null){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-                playOrPauseSelectedSong(checkedId);
-            }
-        });
-
-        dialog_choose_song.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog_choose_song.show();
-
-        confirm_song.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mediaPlayer != null){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-                dialog_choose_song.dismiss();
-            }
-        });
-    }
-
-    public void playOrPauseSelectedSong(int checkedId){
-        RadioButton checkedRadioButton = (RadioButton) dialog_choose_song.findViewById(checkedId);
-        checkedRadioButton.setClickable(true);
-        checkedRadioButton.setFocusable(true);
-        mediaPlayer = null;
-
-        switch (checkedId){
-            case R.id.horn_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.air_horn_in_close_hall_series);
-                mediaPlayer.start();
-                break;
-            case R.id.all_that_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.allthat);
-                mediaPlayer.start();
-                break;
-            case R.id.a_new_beginning_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.anewbeginning);
-                mediaPlayer.start();
-                break;
-            case R.id.ceausescu_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.ceausescu_alo);
-                mediaPlayer.start();
-                break;
-            case R.id.cig_swaag_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.cig_swaag);
-                mediaPlayer.start();
-                break;
-            case R.id.creative_minds_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.creativeminds);
-                mediaPlayer.start();
-                break;
-            case R.id.dubstep_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.dubstep);
-                mediaPlayer.start();
-                break;
-            case R.id.funny_song_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.funnysong);
-                mediaPlayer.start();
-                break;
-            case R.id.hey_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.hey);
-                mediaPlayer.start();
-                break;
-            case R.id.skull_fire_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.skull_fire);
-                mediaPlayer.start();
-                break;
-            case R.id.spaceship_alarm_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.spaceship_alarm);
-                mediaPlayer.start();
-                break;
-            case R.id.summer_radio:
-                mediaPlayer = MediaPlayer.create(dialog_choose_song.getContext(), R.raw.summer);
-                mediaPlayer.start();
-                break;
-        }
-
-        checkedRadioButton.setOnClickListener(new View.OnClickListener() {
-            boolean playing;
-            @Override
-            public void onClick(View v) {
-                if(playing) {
-                    mediaPlayer.pause();
-                    playing = false;
-                } else {
-                    mediaPlayer.start();
-                    playing = true;
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if(mediaPlayer!=null){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        Intent i = new Intent(this,SetUpAlarmActivity.class);
+        startActivity(i);
     }
 
     public void onCancelAlarms(View view){

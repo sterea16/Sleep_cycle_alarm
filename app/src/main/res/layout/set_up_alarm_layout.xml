@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/selectWakeUpTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/selectWakeUpTime"
+            android:textSize="25sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="12dp"/>
+        <TimePicker
+            android:id="@+id/spinner_time_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:layout_below="@+id/selectWakeUpTime"
+            android:timePickerMode="spinner" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/details_cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spinner_time_picker"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#5a595b">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textView_sleepCycle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sleepCycles"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_margin="8dp"/>
+
+                <!--TODO add a default value for sleep cycles-->
+                <Spinner
+                    android:id="@+id/spinner_numberSleepCycles"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/cycles"
+                    android:layout_alignStart="@id/spinner_minutesOfFallingAsleep"
+                    android:layout_alignTop="@+id/textView_sleepCycle"
+                    android:inputType="number"/>
+
+                <ImageButton
+                    android:id="@+id/infoCycles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/spinner_minutesOfFallingAsleep"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/outline_help_outline_24"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"/>
+
+                <TextView
+                    android:id="@+id/textView_minutesFallingAsleep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView_sleepCycle"
+                    android:layout_alignStart="@+id/textView_sleepCycle"
+                    android:text="@string/minutesFallingAsleep"
+                    android:layout_marginBottom="8dp"/>
+
+                <!--TODO add a default value for minutes falling asleep 14-->
+                <Spinner
+                    android:id="@+id/spinner_minutesOfFallingAsleep"
+                    android:layout_width="75dp"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/falling_asleep_minutes"
+                    android:layout_below="@+id/spinner_numberSleepCycles"
+                    android:layout_toEndOf="@id/textView_minutesFallingAsleep"
+                    android:layout_marginBottom="8dp" />
+
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/chooseSongs_cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/details_cardView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#5a595b">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/chooseASong_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/chooseARingtone"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_alignTop="@id/browse"/>
+                <TextView
+                    android:id="@+id/songNameChosen_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/noRingtoneSelected"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:layout_marginBottom="8dp"
+                    android:layout_below="@+id/chooseASong_textView"
+                    android:layout_alignStart="@+id/chooseASong_textView"
+                    android:layout_alignEnd="@+id/chooseASong_textView"/>
+                <Button
+                    android:id="@+id/browse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/browse"
+                    android:textAllCaps="false"
+                    android:textStyle="italic"
+                    android:background="@drawable/music_select_button"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/chooseASong_textView"
+                    android:layout_marginStart="42dp"
+                    android:layout_marginEnd="8dp"/>
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/cancel_alarm_wake_up_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancelCreatingAlarm"
+            android:layout_alignStart="@+id/chooseSongs_cardView"
+            android:layout_below="@id/chooseSongs_cardView"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="50dp"/>
+        <Button
+            android:id="@+id/create_alarm_wake_up_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/createAlarm"
+            android:layout_alignEnd="@id/chooseSongs_cardView"
+            android:layout_below="@id/chooseSongs_cardView"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="50dp"/>
+     </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.cardview.widget.CardView>

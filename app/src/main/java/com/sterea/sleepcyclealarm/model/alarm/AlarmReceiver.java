@@ -1,4 +1,4 @@
-package com.sterea.sleepcyclealarm.Model.Alarm;
+package com.sterea.sleepcyclealarm.model.alarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import com.sterea.sleepcyclealarm.AlarmActivity;
-import com.sterea.sleepcyclealarm.MainActivity;
 
 
 public class AlarmReceiver extends BroadcastReceiver{

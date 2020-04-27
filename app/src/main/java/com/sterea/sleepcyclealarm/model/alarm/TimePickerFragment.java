@@ -1,4 +1,4 @@
-package com.sterea.sleepcyclealarm.Model.Alarm;
+package com.sterea.sleepcyclealarm.model.alarm;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;

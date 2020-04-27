@@ -15,15 +15,22 @@
     <string name="wakeUp">WAKE UP!</string>
     <string name="sleepingNow">Sleeping now</string>
 
-    <string name="choose_a_ringtone">Choose a ringtone</string>
-    <string name="sleep_cycles">Select the number of sleep cycles: </string>
-    <string name="minutes_falling_asleep">Estimated minutes for falling asleep: </string>
-    <string name="choose_song_open_dialog">songs...</string>
-    <string name="add_alarm">Add alarm</string>
+    <!--MainActivity-->
+    <string name="setUpAlarm">Set up</string>
     <string name="cancel_all_alarms">Cancel alarms</string>
-    <string name="create_alarm">Create</string>
-    <string name="cancel_creating_alarm">Cancel</string>
 
+    <!--SetUpAlarmActivity-->
+    <string name="noRingtoneSelected">No ringtone selected</string>
+    <string name="selectWakeUpTime">Select wake up time</string>
+    <string name="chooseARingtone">Choose a ringtone</string>
+    <string name="selectedRingtone">Selected ringtone</string>
+    <string name="sleepCycles">Number of sleep cycles: </string>
+    <string name="minutesFallingAsleep">Minutes for falling asleep: </string>
+    <string name="browse">browse</string>
+    <string name="createAlarm">Create</string>
+    <string name="cancelCreatingAlarm">Cancel</string>
+
+    <!--spinners data-->
     <string-array name="cycles">
         <item>1</item>
         <item>2</item>
@@ -60,6 +67,7 @@
         <item>50</item>
     </string-array>
 
+    <!--song list-->
     <string name="song_horn">Horn</string>
     <string name="song_all_that"> All that</string>
     <string name="song_a_new_beginning">A new beginning</string>

@@ -91,10 +91,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_alarm"
+            android:text="@string/setUpAlarm"
             android:layout_above="@+id/add_alarm"
             android:layout_alignStart="@+id/add_alarm"
-            android:layout_marginEnd="16dp"
+            android:layout_alignEnd="@+id/add_alarm"
             android:gravity="center"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

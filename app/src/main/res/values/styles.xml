@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorPrimaryDark</item>
     </style>
     <style name="Material" parent="Widget.MaterialComponents.ExtendedFloatingActionButton"/>
+
+    <style name="DialogActivityTheme" parent="Theme.AppCompat.Dialog">
+        <!--custom shape for rounded corners-->
+        <item name="android:windowBackground">@drawable/custom_dialog_theme</item>
+        <!--removes the shadows around the dialog activities-->
+        <item name="android:backgroundDimAmount">0.1</item>
+        <!--activated state color for radio button-->
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>
