@@ -18,6 +18,11 @@
     <!--MainActivity-->
     <string name="setUpAlarm">Set up</string>
     <string name="cancel_all_alarms">Cancel alarms</string>
+    <string name="display_bed_time_1">Alarm set for </string>
+    <string name="display_bed_time_2">You should go to sleep at </string>
+    <string name="display_bed_time_3"> to get </string>
+    <string name="display_bed_time_4"> sleep cycles.</string>
+    <string name="knownWakeUpTimeText">Know when you have to wake up?\nTap to find out when to go to sleep</string>
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
@@ -30,42 +35,10 @@
     <string name="createAlarm">Create</string>
     <string name="cancelCreatingAlarm">Cancel</string>
 
-    <!--spinners data-->
-    <string-array name="cycles">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-    </string-array>
-    <string-array name="falling_asleep_minutes">
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-        <item>18</item>
-        <item>19</item>
-        <item>20</item>
-        <item>25</item>
-        <item>30</item>
-        <item>35</item>
-        <item>40</item>
-        <item>45</item>
-        <item>50</item>
-    </string-array>
+    <!--Alert dialog getting started-->
+    <string name="alert_dialog_getting_started_title">Setting up your first alarm</string>
+    <string name="alert_dialog_getting_started_message">Be careful at sleep cycles and estimated time for falling asleep</string>
+    <string name="alert_dialog_getting_started_positiveButton">Got it!</string>
 
     <!--song list-->
     <string name="song_horn">Horn</string>
