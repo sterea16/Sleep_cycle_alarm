@@ -59,7 +59,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="6dp">
 
             <TextView
                 android:id="@+id/alarm_status"
@@ -67,16 +67,18 @@
                 android:layout_height="wrap_content"
                 android:text="@string/noAlarmSet"
                 android:textSize="30sp" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/knownWakeUp_cardView"
-                android:padding="16dp"
+                android:padding="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 app:cardCornerRadius="16dp">
                 <LinearLayout
-                    android:padding="8dp"
+                    android:padding="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
@@ -86,7 +88,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_weight="2">
+                        android:layout_weight="2"
+                        android:layout_marginEnd="4dp">
                     <TextView
                         android:id="@+id/knownWakeUp_textView"
                         android:layout_width="wrap_content"
@@ -102,68 +105,93 @@
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <Button
-                android:id="@+id/sleepNow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sleepingNow" />
 
-            <TextView
-                android:id="@+id/goToSleepTime_text1"
-                android:layout_width="wrap_content"
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/knownBedTime_cardView"
+                android:padding="8dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:textSize="20sp"
-                android:padding="16dp"/>
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp">
+                <LinearLayout
+                    android:padding="4dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="2"
+                        android:layout_marginEnd="4dp">
+                        <TextView
+                            android:id="@+id/knownBedTime_textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@android:style/TextAppearance.Medium"
+                            android:layout_margin="6dp"
+                            android:text="@string/knownBedTimeText"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/knownBedTime_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/napTime_cardView"
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="4dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="2"
+                        android:layout_marginEnd="4dp">
+                        <TextView
+                            android:id="@+id/napTime_textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@android:style/TextAppearance.Medium"
+                            android:layout_margin="6dp"
+                            android:text="@string/napTimeText"/>
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/napTime_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/setUpAlarm"
-            android:layout_above="@+id/add_alarm"
-            android:layout_alignStart="@+id/add_alarm"
-            android:layout_alignEnd="@+id/add_alarm"
-            android:gravity="center"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/add_alarm"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/baseline_alarm_add_24"
-            android:onClick="onClickAddAlarm"/>
-
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel_all_alarms"
-            android:layout_above="@+id/cancel_alarms"
-            android:layout_alignStart="@+id/cancel_alarms"
-            android:layout_marginStart="5dp"
-            android:gravity="center"/>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/cancel_alarms"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/baseline_alarm_off_24"
-            android:onClick="onCancelAlarms"/>
-
-    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

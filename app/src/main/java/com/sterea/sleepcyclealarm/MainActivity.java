@@ -5,10 +5,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -16,27 +18,27 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.sterea.sleepcyclealarm.model.alarm.AlarmReceiver;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
-    private TextView alarm_status;
-    private TextView goToSleepTime_text1;
+public class MainActivity extends AppCompatActivity {
     private SwitchMaterial knowWakeUpTime_switch;
-    private Dialog dialog_wake_up_time, dialog_choose_song;
-    private MediaPlayer mediaPlayer;
     //TODO Create a new Class for all the methods that use the alarm
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(final Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
 
@@ -48,71 +50,90 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         dateView.setText(date);
         /*TextClock textClock = findViewById(R.id.textClock);
         textClock.is24HourModeEnabled();*/
+
+        /*if the app is reopened after a while the configurator needs to get the wake up hour form
+        * shared preferences file*/
+        if(Configurator.knownWakeUpTimeConf.getWakeUpTime() == null){
+            SharedPreferences  savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+            /*if there is already a saved configuration, the knownWakeUp configurator object will set its wake up time*/
+            if(savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false)){
+                int hour = savedPreferences.getInt(Configurator.HOUR, 0);
+                int minutes = savedPreferences.getInt(Configurator.MINUTES, 0);
+                Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
+            }
+        }
         knowWakeUpTime_switch = findViewById(R.id.knownWakeUpTime_switch);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);//removes the title of the toolbar (this is the main activity and its label it's required in order to give a name to the app launcher)
-
-        goToSleepTime_text1 = findViewById(R.id.goToSleepTime_text1);
-        alarm_status = findViewById(R.id.alarm_status);
-        alarm_status.setText("No alarm set");
-
-        Button sleepingNOW = findViewById(R.id.sleepNow);
-        sleepingNOW.setOnClickListener(new View.OnClickListener() {
+        knowWakeUpTime_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                getWakeUpTime();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+                if(!isChecked){
+                    SharedPreferences.Editor editor = savedPreferences.edit();
+                    editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
+                    editor.apply();
+                    Configurator.knownWakeUpTimeConf.setAlarmState(false);
+                    cancelAlarm();
+                } else {
+                    /*if there has been already a configuration, then just set up the alarm with that configuration*/
+                    if(savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false)){
+                        SharedPreferences.Editor editor = savedPreferences.edit();
+                        editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, true);
+                        editor.apply();
+                        Configurator.knownWakeUpTimeConf.setAlarmState(true);
+                        startAlarm(Configurator.knownWakeUpTimeConf.getWakeUpTime());
+                    } else {
+                        /*else start a SetUpAlarmActivity to begin a new configuration*/
+                        Intent i = new Intent(MainActivity.this, SetUpAlarmActivity.class);
+                        startActivity(i);
+                    }
+
+                }
             }
         });
 
-        CardView cardView = findViewById(R.id.knownWakeUp_cardView);
-        cardView.setOnClickListener(new View.OnClickListener(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);//removes the title of the toolbar (this is the main activity and its label it's required in order to give a name to the app launcher)
+
+        CardView knownWakeUpCardView = findViewById(R.id.knownWakeUp_cardView);
+        knownWakeUpCardView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, SetUpAlarmActivity.class);
                 startActivity(i);
             }
         });
-    }
+        knownWakeUpCardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                alertDialog.setMessage(R.string.deleteDialog)
+                        .setPositiveButton(R.string.positiveDialog, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //TODO Delete the alarm
+                                SharedPreferences sharedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+                                Configurator.knownWakeUpTimeConf.setSleepCycles(7);
+                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(6);
+                                Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(14);
+                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(9);
+                                Configurator.knownWakeUpTimeConf.setConfigured(false);
+                                Configurator.knownWakeUpTimeConf.setAlarmState(false);
+                                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(sharedPreferences);
+                                updateKnownUpTimeCardView();
+                            }
+                        })
+                        .setNegativeButton(R.string.negativeDialog, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-    @Override
-    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, hour);
-        c.set(Calendar.MINUTE,minute);
-        c.set(Calendar.SECOND,0);
+                            }
+                        });
+                alertDialog.show();
+                return false;
+            }
+        });
 
-        startAlarm(c);
-        updateAlarmStatus(c);
-        //minutes
-        int oneSleepCycle = 90;
-        c.add(Calendar.MINUTE,-(5* oneSleepCycle));
-        String text ="To get 5 full sleep cycles you should fall asleep at <i> <font color = red>"
-                + DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime())
-                + "</font> </i>.<br /> Note that the average time to fall asleep is <i>14 minutes</i>.";
-        updateGoToSleepText(text);//this will tell the user when is the right time to fall asleep
-    }
-
-    private void updateAlarmStatus(Calendar c){
-        String alarmStatusText = "Alarm is set for: ";
-        alarmStatusText += DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime());
-        alarm_status.setText(alarmStatusText);
-    }
-
-    private void updateGoToSleepText(String text){
-        goToSleepTime_text1.setText(Html.fromHtml(text));
-    }
-
-    private void getWakeUpTime(){ // gets the right time for wake up
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.SECOND,0);
-        c.add(Calendar.MINUTE,6*90);
-        startAlarm(c);
-        updateAlarmStatus(c);
-        String text = "If you are going to sleep right now you will get 6 full sleep cycle at <i><font color = red>" + DateFormat.getTimeInstance(DateFormat.SHORT).format(c.getTime())
-                    +"</i></font>.";
-        updateGoToSleepText(text);
     }
 
     //TODO save alarm after device reboot https://developer.android.com/training/scheduling/alarms
@@ -126,41 +147,35 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         }
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP,c.getTimeInMillis(),pendingIntent);
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(this,"Alarm set", duration);
+        Toast toast = Toast.makeText(this,"Alarm set", Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    public void onClickAddAlarm(View view){
-        /*DialogFragment timePicker = new TimePickerFragment();
-        timePicker.show(getSupportFragmentManager(),"time picker");*/
-
-        Intent i = new Intent(this,SetUpAlarmActivity.class);
-        startActivity(i);
-    }
-
-    public void onCancelAlarms(View view){
+    public void cancelAlarm(){
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1,intent,0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1, intent,0);
         alarmManager.cancel(pendingIntent);
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(this,"Alarm canceled", duration);
         toast.show();
-        alarm_status.setText("No alarm set");
-        String text ="";
-        updateGoToSleepText(text);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        boolean check = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false);
-        if(check){
-            knowWakeUpTime_switch.setChecked(true);
-            TextView textView = findViewById(R.id.knownWakeUp_textView);
-        }
+        updateKnownUpTimeCardView();
     }
 
+    private void updateKnownUpTimeCardView(){
+        SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        boolean checked = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
+        if(checked){
+            knowWakeUpTime_switch.setChecked(true);
+            TextView textView = findViewById(R.id.knownWakeUp_textView);
+            startAlarm(Configurator.knownWakeUpTimeConf.getWakeUpTime());
+        } else {
+            knowWakeUpTime_switch.setChecked(false);
+        }
+    }
 }

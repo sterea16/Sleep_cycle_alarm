@@ -25,10 +25,10 @@ public class SongListActivity extends AppCompatActivity {
 
         radioGroup = findViewById(R.id.group_radio_songs);
 
-        if(Configurator.knownWakeUpTimeConf.getIndexPosition() !=0 ){
-            RadioButton radioButton = findViewById(Configurator.knownWakeUpTimeConf.getIndexPosition());
+        if(Configurator.knownWakeUpTimeConf.getSongIndexPosition() !=0 ){
+            RadioButton radioButton = findViewById(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
             radioButton.setChecked(true);
-            getSong(Configurator.knownWakeUpTimeConf.getIndexPosition());
+            getSong(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
         } else {
             getSong(radioGroup.getCheckedRadioButtonId());
         }
@@ -66,44 +66,55 @@ public class SongListActivity extends AppCompatActivity {
         switch (checkedId){
             case R.id.horn_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.air_horn_in_close_hall_series);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.air_horn_in_close_hall_series);
                 break;
             case R.id.all_that_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.allthat);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.allthat);
                 break;
             case R.id.a_new_beginning_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.anewbeginning);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.anewbeginning);
                 break;
             case R.id.ceausescu_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.ceausescu_alo);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.ceausescu_alo);
                 break;
             case R.id.cig_swaag_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.cig_swaag);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.cig_swaag);
                 break;
             case R.id.creative_minds_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.creativeminds);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.creativeminds);
                 break;
             case R.id.dubstep_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.dubstep);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.dubstep);
                 break;
             case R.id.funny_song_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.funnysong);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.funnysong);
                 break;
             case R.id.hey_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.hey);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.hey);
                 break;
             case R.id.skull_fire_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.skull_fire);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.skull_fire);
                 break;
             case R.id.spaceship_alarm_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.spaceship_alarm);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.spaceship_alarm);
                 break;
             case R.id.summer_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.summer);
+                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.summer);
                 break;
         }
-
         Configurator.knownWakeUpTimeConf.setRingtoneName(radioButton.getText().toString());
-        Configurator.knownWakeUpTimeConf.setIndexPosition(checkedId);
+        Configurator.knownWakeUpTimeConf.setSongIndexPosition(checkedId);
 
         radioButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +127,6 @@ public class SongListActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     protected void onResume() {
@@ -134,7 +144,6 @@ public class SongListActivity extends AppCompatActivity {
             isPaused = true;
         }
     }
-
 
     @Override
     protected void onStop() {

@@ -34,6 +34,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.set_up_alarm_layout);
         getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        /*create arrays to populate the spinners*/
         ArrayList<Integer> sleepCyclesArray = new ArrayList<>();
         for(int i = 1; i <=9 ; i++){
             sleepCyclesArray.add(i);
@@ -45,11 +46,11 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                 i+=4;
         }
 
+        /*setting up the spinners and the adaptors*/
         Spinner sleepCyclesSpinner = findViewById(R.id.spinner_numberSleepCycles);
         ArrayAdapter<Integer> sleepCyclesAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, sleepCyclesArray);
         sleepCyclesSpinner.setAdapter(sleepCyclesAdapter);
         setUpSpinners(sleepCyclesSpinner, sleepCyclesArray, R.id.spinner_numberSleepCycles);
-
 
         Spinner minutesAsleepSpinner = findViewById(R.id.spinner_minutesOfFallingAsleep);
         ArrayAdapter<Integer> minutesAsleepAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, minutesAsleepArray);
@@ -97,22 +98,17 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                     Configurator.knownWakeUpTimeConf.setHour(timePicker.getHour());
                     Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getMinute());
                 }
+                Configurator.knownWakeUpTimeConf.setWakeUpTime(Configurator.knownWakeUpTimeConf.getHour(), Configurator.knownWakeUpTimeConf.getMinutes());
                 Configurator.knownWakeUpTimeConf.setSleepCycles(cyclesValue);
                 Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(cyclesPosition_spinner);
                 Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(asleepMinutesValue);
                 Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(asleepMinutesPosition_spinner);
                 Configurator.knownWakeUpTimeConf.setConfigured(true);
+                Configurator.knownWakeUpTimeConf.setAlarmState(true);
 
                 SharedPreferences savePreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-                SharedPreferences.Editor editor = savePreferences.edit();
-                editor.putInt(Configurator.HOUR, Configurator.knownWakeUpTimeConf.getHour());
-                editor.putInt(Configurator.MINUTES, Configurator.knownWakeUpTimeConf.getMinutes());
-                editor.putInt(Configurator.CYCLES_INT_VALUE, Configurator.knownWakeUpTimeConf.getSleepCycles());
-                editor.putInt(Configurator.ASLEEP_INT_VALUE, Configurator.knownWakeUpTimeConf.getMinutesFallingAsleep());
-                editor.putInt(Configurator.CYCLES_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerCycles());
-                editor.putInt(Configurator.ASLEEP_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
-                editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, Configurator.knownWakeUpTimeConf.getConfigured());
-                editor.apply();
+
+                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(savePreferences);
                 finish();
             }
         });
@@ -136,6 +132,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                 spinner.setSelection(Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
                 break;
         }
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -146,14 +143,10 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                             case R.id.spinner_numberSleepCycles:
                                 cyclesValue = i;
                                 cyclesPosition_spinner = position;
-                                Configurator.knownWakeUpTimeConf.setSleepCycles(i);
-                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(position);
                                 break;
                             case R.id.spinner_minutesOfFallingAsleep:
                                 asleepMinutesValue = i;
                                 asleepMinutesPosition_spinner = position;
-                                Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(i);
-                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(position);
                                 break;
                         }
                         break;
@@ -175,7 +168,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         });
     }
 
-    //if the app is used for the first time this method run
+    //if the app is used for the first time this method runs
     //TODO create a new layout for the dialog explaining how to properly set up the alarm
     private void showTips(){
         AlertDialog.Builder tips = new AlertDialog.Builder(this);
@@ -193,10 +186,11 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         editor.apply();
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         updateSongView();
     }
+
+
 }
