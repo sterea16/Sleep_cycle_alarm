@@ -14,8 +14,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class SongListActivity extends AppCompatActivity {
     private boolean isPaused;
     private MediaPlayer mediaPlayer = null;
-    private RadioGroup radioGroup;
-    private int indexPosition; // used to save the checked radio button
+    private int rawSongId, radioCheckedId;
+    private String songName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -23,7 +24,7 @@ public class SongListActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.song_list_activity_layout);
 
-        radioGroup = findViewById(R.id.group_radio_songs);
+        RadioGroup radioGroup = findViewById(R.id.group_radio_songs);
 
         if(Configurator.knownWakeUpTimeConf.getSongIndexPosition() !=0 ){
             RadioButton radioButton = findViewById(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
@@ -46,7 +47,6 @@ public class SongListActivity extends AppCompatActivity {
 
         FloatingActionButton confirmSong = findViewById(R.id.confirm_song);
         confirmSong.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        confirmSong.setClickable(true);
         confirmSong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,6 +55,9 @@ public class SongListActivity extends AppCompatActivity {
                     mediaPlayer.release();
                     mediaPlayer = null;
                 }
+                Configurator.knownWakeUpTimeConf.setRawSongId(rawSongId);
+                Configurator.knownWakeUpTimeConf.setSongIndexPosition(radioCheckedId);
+                Configurator.knownWakeUpTimeConf.setRingtoneName(songName);
                 finish();
             }
         });
@@ -62,59 +65,59 @@ public class SongListActivity extends AppCompatActivity {
 
     private void getSong(int checkedId){
         RadioButton radioButton =  findViewById(checkedId);
-        indexPosition = radioGroup.indexOfChild(radioButton);
+
         switch (checkedId){
             case R.id.horn_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.air_horn_in_close_hall_series);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.air_horn_in_close_hall_series);
+                rawSongId = R.raw.air_horn_in_close_hall_series;
                 break;
             case R.id.all_that_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.allthat);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.allthat);
+                rawSongId = R.raw.allthat;
                 break;
             case R.id.a_new_beginning_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.anewbeginning);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.anewbeginning);
+                rawSongId = R.raw.anewbeginning;
                 break;
             case R.id.ceausescu_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.ceausescu_alo);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.ceausescu_alo);
+                rawSongId = R.raw.ceausescu_alo;
                 break;
             case R.id.cig_swaag_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.cig_swaag);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.cig_swaag);
+                rawSongId = R.raw.cig_swaag;
                 break;
             case R.id.creative_minds_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.creativeminds);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.creativeminds);
+                rawSongId = R.raw.creativeminds;
                 break;
             case R.id.dubstep_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.dubstep);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.dubstep);
+                rawSongId = R.raw.dubstep;
                 break;
             case R.id.funny_song_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.funnysong);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.funnysong);
+                rawSongId = R.raw.funnysong;
                 break;
             case R.id.hey_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.hey);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.hey);
+                rawSongId = R.raw.hey;
                 break;
             case R.id.skull_fire_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.skull_fire);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.skull_fire);
+                rawSongId = R.raw.skull_fire;
                 break;
             case R.id.spaceship_alarm_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.spaceship_alarm);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.spaceship_alarm);
+                rawSongId = R.raw.spaceship_alarm;
                 break;
             case R.id.summer_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.summer);
-                Configurator.knownWakeUpTimeConf.setRawSongId(R.raw.summer);
+                rawSongId = R.raw.summer;
                 break;
         }
-        Configurator.knownWakeUpTimeConf.setRingtoneName(radioButton.getText().toString());
-        Configurator.knownWakeUpTimeConf.setSongIndexPosition(checkedId);
+        songName = radioButton.getText().toString();
+        radioCheckedId = checkedId;
 
         radioButton.setOnClickListener(new View.OnClickListener() {
             @Override

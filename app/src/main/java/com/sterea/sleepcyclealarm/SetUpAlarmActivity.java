@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -80,10 +81,18 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                if(Configurator.knownWakeUpTimeConf.getRingtoneName() != null)
+                    Configurator.knownWakeUpTimeConf.setRingtoneName(null);
+                Configurator.knownWakeUpTimeConf.setConfChanged(false);
                 finish();
             }
         });
         final TimePicker timePicker = findViewById(R.id.spinner_time_picker);
+        if(DateFormat.is24HourFormat(this)){
+            timePicker.setIs24HourView(true);
+        } else {
+            timePicker.setIs24HourView(false);
+        }
 
         /*Saving the user alarm configuration by storing the data in a SharedPreferences object*/
         Button create = findViewById(R.id.create_alarm_wake_up_time);
@@ -98,11 +107,13 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                     Configurator.knownWakeUpTimeConf.setHour(timePicker.getHour());
                     Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getMinute());
                 }
-                Configurator.knownWakeUpTimeConf.setWakeUpTime(Configurator.knownWakeUpTimeConf.getHour(), Configurator.knownWakeUpTimeConf.getMinutes());
                 Configurator.knownWakeUpTimeConf.setSleepCycles(cyclesValue);
                 Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(cyclesPosition_spinner);
                 Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(asleepMinutesValue);
                 Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(asleepMinutesPosition_spinner);
+                Configurator.knownWakeUpTimeConf.setWakeUpTime(Configurator.knownWakeUpTimeConf.getHour(), Configurator.knownWakeUpTimeConf.getMinutes());
+                Configurator.knownWakeUpTimeConf.setBedTime(Configurator.knownWakeUpTimeConf.getWakeUpTime(), cyclesValue, asleepMinutesValue);
+                Configurator.knownWakeUpTimeConf.setConfChanged(true);
                 Configurator.knownWakeUpTimeConf.setConfigured(true);
                 Configurator.knownWakeUpTimeConf.setAlarmState(true);
 
@@ -191,6 +202,5 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         super.onResume();
         updateSongView();
     }
-
 
 }

@@ -107,7 +107,9 @@
             android:layout_height="wrap_content"
             android:src="@drawable/round_done_24"
             android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
             app:backgroundTint="@color/colorPrimaryDark"
-            app:fabSize="mini"/>
+            app:fabSize="mini" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

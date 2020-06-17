@@ -13,33 +13,36 @@ final class Configurator {
     private int itemPositionSpinnerCycles, itemPositionSpinnerMinutesAsleep;
     private int hour, minutes;
     private Calendar wakeUpTime;
+    private Calendar bedTime;
     private Boolean isConfigured;
-    private Boolean alarmState;
+    private Boolean alarmState; //true for alarm on, false for alarm off
+    private Boolean confChanged; //used in onResume method of MainActivity to check for needed update of textViews
 
     /*Sate for the shared preferences file
     * Below are listed al the keys of the shared preferences file
     * SAVED_CONFIGURATION is the file name
     * FIRST_TIME_SET_UP is the key to check if the set up dialog activity was opened for the first time ever*/
     static final String SAVED_CONFIGURATION = "com.sterea.sleepcyclealarm";
-    static final String HOUR = "wakeUpMinutes";
-    static final String MINUTES = "minutesWakeUp";
+    static final String HOUR_KNOWN_WAKE_UP = "wake up hour for known wake up time configuration";
+    static final String MINUTES_KNOWN_WAKE_UP = "wake up minutes for known wake up configuration";
     static final String IS_KNOWN_WAKE_UP_CONFIGURED = "isConfiguredKnownWakeUp";
     static final String IS_KNOWN_WAKE_UP_ALARM_STATE = "theStateOfTheAlarmForKnownWakeUpTime";
     static final String CYCLES_INT_VALUE = "cyclesIntValue";
     static final String ASLEEP_INT_VALUE = "asleepIntValue";
     static final String WAKING_HOUR = "wakingHour";
     static final String SONG_RAW_ID = "song";
-    /*These 2 keys are used in SetUpAlarmActivity to display the configuration already done*/
+    /*These keys are used in SetUpAlarmActivity to display the configuration already done*/
     static final String CYCLES_POSITION_SPINNER = "cyclePositionSpinner";
     static final String ASLEEP_POSITION_SPINNER = "asleepPositionSpinner";
+    /*Used to show a guide when the app is first time used*/
     static final String FIRST_TIME_SET_UP = "firstTimeSetUp";
 
     static int[] song = {R.raw.air_horn_in_close_hall_series, R.raw.allthat, R.raw.anewbeginning, R.raw.ceausescu_alo,
             R.raw.cig_swaag, R.raw.creativeminds, R.raw.dubstep, R.raw.funnysong,
             R.raw.hey, R.raw.skull_fire, R.raw.spaceship_alarm, R.raw.summer};
 
-    static Configurator knownBedTimeConf = new Configurator(7, 14, 6, 9);
-    static Configurator knownWakeUpTimeConf = new Configurator(7, 14, 6, 9);
+    static Configurator knownBedTimeConf = new Configurator(6, 14, 5, 9);
+    static Configurator knownWakeUpTimeConf = new Configurator(6, 14, 5, 9);
 
     private Configurator(int defSleepCycles, int defFallingAsleep, int itemPositionSpinnerCycles, int itemPositionSpinnerMinutesAsleep){
         sleepCycles = defSleepCycles;
@@ -50,8 +53,8 @@ final class Configurator {
 
     void updateSharedConfiguration(SharedPreferences savedPreferences){
         SharedPreferences.Editor editor = savedPreferences.edit();
-        editor.putInt(Configurator.HOUR, Configurator.knownWakeUpTimeConf.getHour());
-        editor.putInt(Configurator.MINUTES, Configurator.knownWakeUpTimeConf.getMinutes());
+        editor.putInt(Configurator.HOUR_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getHour());
+        editor.putInt(Configurator.MINUTES_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getMinutes());
         editor.putInt(Configurator.CYCLES_INT_VALUE, Configurator.knownWakeUpTimeConf.getSleepCycles());
         editor.putInt(Configurator.ASLEEP_INT_VALUE, Configurator.knownWakeUpTimeConf.getMinutesFallingAsleep());
         editor.putInt(Configurator.CYCLES_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerCycles());
@@ -69,6 +72,19 @@ final class Configurator {
         wakeUpTime.set(Calendar.HOUR_OF_DAY, hour);
         wakeUpTime.set(Calendar.MINUTE, minutes);
         wakeUpTime.set(Calendar.SECOND, 0);
+    }
+
+    /*create calendar objects for bed time for knownWakeUpConfig object;
+     * it can be called either from SetUpAlarmActivity on Create button listener
+     * or in MainActivity using the shared preferences file*/
+    void setBedTime(Calendar wakeUpTime, int cycles, int asleepMinutes){
+        bedTime = (Calendar) wakeUpTime.clone();
+        bedTime.add(Calendar.MINUTE, -(cycles * 90) - asleepMinutes);
+    }
+
+    /*overload method, used only for knownBedTimeConfig object*/
+    void setBedTime(Calendar bedTime){
+        this.bedTime = bedTime;
     }
 
     void setSleepCycles(int sleepCycles) {
@@ -97,6 +113,10 @@ final class Configurator {
 
     void setMinutes(int minutes) {
         this.minutes = minutes;
+    }
+
+    public void setConfChanged(Boolean confChanged) {
+        this.confChanged = confChanged;
     }
 
     int getSleepCycles() {
@@ -131,6 +151,10 @@ final class Configurator {
         return wakeUpTime;
     }
 
+    public Calendar getBedTime() {
+        return bedTime;
+    }
+
     public int getItemPositionSpinnerCycles() {
         return itemPositionSpinnerCycles;
     }
@@ -162,4 +186,9 @@ final class Configurator {
     public void setAlarmState(Boolean alarmState) {
         this.alarmState = alarmState;
     }
+
+    public Boolean getConfChanged() {
+        return confChanged;
+    }
+
 }

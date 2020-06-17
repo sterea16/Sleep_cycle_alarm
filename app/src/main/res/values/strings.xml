@@ -1,33 +1,39 @@
 <resources>
     <string name="app_name">Sleep cycle alarm</string>
-    <string name="simple_alarm_clock">Simple alarm clock</string>
+<!--    <string name="simple_alarm_clock">Simple alarm clock</string>
     <string name="pickTime">pick_time</string>
     <string name="switch_on_off">Switch</string>
     <string name="off_on">OFF-ON</string>
     <string name="on">On</string>
-    <string name="off">Off</string>
-    <string name="alarmOn">Alarm ON</string>
-    <string name="alarmOff">Alarm OFF</string>
-    <string name="textView">TextView</string>
+    <string name="off">Off</string>-->
+
+<!--    <string name="textView">TextView</string>-->
     <string name="noAlarmSet">No alarm set</string>
-    <string name="button">Button</string>
+<!--    <string name="button">Button</string>-->
     <string name="dismiss">Dismiss</string>
     <string name="wakeUp">WAKE UP!</string>
-    <string name="sleepingNow">Sleeping now</string>
+<!--    <string name="sleepingNow">Sleeping now</string>-->
 
     <!--MainActivity-->
     <string name="setUpAlarm">Set up</string>
     <string name="cancel_all_alarms">Cancel alarms</string>
-    <string name="display_bed_time_1">Alarm set for </string>
-    <string name="display_bed_time_2">You should go to sleep at </string>
-    <string name="display_bed_time_3"> to get </string>
-    <string name="display_bed_time_4"> sleep cycles.</string>
-    <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate bed time.</string>
-    <string name="knownBedTimeText">Bed time now?\nCalculate wake up time.</string>
+    <string name="alarmOn">Alarm ON</string>
+    <string name="alarmOff">Alarm OFF</string>
+    <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
+    <!--Known waking up time strings card view strings-->
+    <string name="bed_time_text_1">Alarm set for</string>
+    <string name="bed_time_text_2">Go to sleep at</string>
+    <string name="bed_time_text_3"> to get </string>
+    <string name="bed_time_text_4"> sleep cycles.</string>
+    <string name="knownWakeUpTime_alarm_off_text_1">Waking up hour: </string>
+    <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
+    <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
     <string name="napTimeText">Taking a nap.</string>
-    <string name="deleteDialog">Remove this alarm?</string>
-    <string name="positiveDialog">Remove</string>
+    <string name="deleteDialog">Reset alarm configuration?</string>
+    <string name="positiveDialog">Reset</string>
     <string name="negativeDialog">Cancel</string>
+    <!--Known bed time card view strings-->
+    <string name="knownBedTimeText">Bed time now?\nCalculate <i>wake up time</i>.</string>
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
