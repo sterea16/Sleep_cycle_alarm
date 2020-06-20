@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">Sleep cycle alarm</string>
-<!--    <string name="simple_alarm_clock">Simple alarm clock</string>
+    <!--    <string name="simple_alarm_clock">Simple alarm clock</string>
     <string name="pickTime">pick_time</string>
     <string name="switch_on_off">Switch</string>
     <string name="off_on">OFF-ON</string>
     <string name="on">On</string>
     <string name="off">Off</string>-->
 
-<!--    <string name="textView">TextView</string>-->
+    <!--    <string name="textView">TextView</string>-->
     <string name="noAlarmSet">No alarm set</string>
-<!--    <string name="button">Button</string>-->
+    <!--    <string name="button">Button</string>-->
     <string name="dismiss">Dismiss</string>
     <string name="wakeUp">WAKE UP!</string>
-<!--    <string name="sleepingNow">Sleeping now</string>-->
+    <!--    <string name="sleepingNow">Sleeping now</string>-->
 
     <!--MainActivity-->
     <string name="setUpAlarm">Set up</string>
@@ -64,5 +64,7 @@
     <string name="song_skull_fire">Skull fire</string>
     <string name="song_spaceship_alarm">Spaceship alarm</string>
     <string name="song_summer">Summer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
