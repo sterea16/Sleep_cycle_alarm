@@ -22,9 +22,12 @@
     <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
     <!--Known waking up time strings card view strings-->
     <string name="bed_time_text_1">Alarm set for</string>
-    <string name="bed_time_text_2">Go to sleep at</string>
-    <string name="bed_time_text_3"> to get </string>
-    <string name="bed_time_text_4"> sleep cycles.</string>
+    <string name="bed_time_text_2">Bed time:</string>
+    <string name="bed_time_text_3"> Sleep cycles:</string>
+    <string name="minutes">minutes</string>
+    <string name="minute">minute</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
     <string name="knownWakeUpTime_alarm_off_text_1">Waking up hour: </string>
     <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
     <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
@@ -37,13 +40,15 @@
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
-    <string name="selectWakeUpTime">Select wake up time</string>
+    <string name="selectWakeUpTime">Select a waking up time</string>
+    <string name="wakingUpTime">Waking up time set for:</string>
     <string name="chooseARingtone">Choose a ringtone</string>
     <string name="selectedRingtone">Selected ringtone</string>
     <string name="sleepCycles">Number of sleep cycles: </string>
     <string name="minutesFallingAsleep">Minutes for falling asleep: </string>
     <string name="browse">browse</string>
     <string name="createAlarm">Create</string>
+    <string name="changeAlarm">Change</string>
     <string name="cancelCreatingAlarm">Cancel</string>
 
     <!--Alert dialog getting started-->

@@ -14,7 +14,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class SongListActivity extends AppCompatActivity {
     private boolean isPaused;
     private MediaPlayer mediaPlayer = null;
-    private int rawSongId, radioCheckedId;
+    private String rawFileSongName;
+    private int radioCheckedId;
     private String songName;
 
     @Override
@@ -26,13 +27,14 @@ public class SongListActivity extends AppCompatActivity {
 
         RadioGroup radioGroup = findViewById(R.id.group_radio_songs);
 
-        if(Configurator.knownWakeUpTimeConf.getSongIndexPosition() !=0 ){
+        if(Configurator.knownWakeUpTimeConf.getSongIndexPosition() != 0 ){
             RadioButton radioButton = findViewById(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
             radioButton.setChecked(true);
             getSong(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
         } else {
             getSong(radioGroup.getCheckedRadioButtonId());
         }
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -45,9 +47,9 @@ public class SongListActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton confirmSong = findViewById(R.id.confirm_song);
-        confirmSong.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        confirmSong.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton confirmFAB = findViewById(R.id.confirm_song);
+        confirmFAB.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        confirmFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mediaPlayer != null) {
@@ -55,7 +57,7 @@ public class SongListActivity extends AppCompatActivity {
                     mediaPlayer.release();
                     mediaPlayer = null;
                 }
-                Configurator.knownWakeUpTimeConf.setRawSongId(rawSongId);
+                Configurator.knownWakeUpTimeConf.setRawFileSongName(rawFileSongName);
                 Configurator.knownWakeUpTimeConf.setSongIndexPosition(radioCheckedId);
                 Configurator.knownWakeUpTimeConf.setRingtoneName(songName);
                 finish();
@@ -69,51 +71,51 @@ public class SongListActivity extends AppCompatActivity {
         switch (checkedId){
             case R.id.horn_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.air_horn_in_close_hall_series);
-                rawSongId = R.raw.air_horn_in_close_hall_series;
+                rawFileSongName = getResources().getResourceName(R.raw.air_horn_in_close_hall_series);
                 break;
             case R.id.all_that_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.allthat);
-                rawSongId = R.raw.allthat;
+                rawFileSongName = getResources().getResourceName(R.raw.allthat);
                 break;
             case R.id.a_new_beginning_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.anewbeginning);
-                rawSongId = R.raw.anewbeginning;
+                rawFileSongName = getResources().getResourceName(R.raw.anewbeginning);
                 break;
             case R.id.ceausescu_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.ceausescu_alo);
-                rawSongId = R.raw.ceausescu_alo;
+                rawFileSongName = getResources().getResourceName(R.raw.ceausescu_alo);
                 break;
             case R.id.cig_swaag_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.cig_swaag);
-                rawSongId = R.raw.cig_swaag;
+                rawFileSongName = getResources().getResourceName(R.raw.cig_swaag);
                 break;
             case R.id.creative_minds_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.creativeminds);
-                rawSongId = R.raw.creativeminds;
+                rawFileSongName = getResources().getResourceName(R.raw.creativeminds);
                 break;
             case R.id.dubstep_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.dubstep);
-                rawSongId = R.raw.dubstep;
+                rawFileSongName = getResources().getResourceName(R.raw.dubstep);
                 break;
             case R.id.funny_song_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.funnysong);
-                rawSongId = R.raw.funnysong;
+                rawFileSongName = getResources().getResourceName(R.raw.funnysong);
                 break;
             case R.id.hey_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.hey);
-                rawSongId = R.raw.hey;
+                rawFileSongName = getResources().getResourceName(R.raw.hey);
                 break;
             case R.id.skull_fire_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.skull_fire);
-                rawSongId = R.raw.skull_fire;
+                rawFileSongName = getResources().getResourceName(R.raw.skull_fire);
                 break;
             case R.id.spaceship_alarm_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.spaceship_alarm);
-                rawSongId = R.raw.spaceship_alarm;
+                rawFileSongName = getResources().getResourceName(R.raw.spaceship_alarm);
                 break;
             case R.id.summer_radio:
                 mediaPlayer = MediaPlayer.create(this, R.raw.summer);
-                rawSongId = R.raw.summer;
+                rawFileSongName = getResources().getResourceName(R.raw.summer);
                 break;
         }
         songName = radioButton.getText().toString();

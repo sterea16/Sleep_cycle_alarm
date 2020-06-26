@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,7 +27,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
     private int cyclesPosition_spinner = 6;
     private int asleepMinutesValue = 14;
     private int asleepMinutesPosition_spinner = 9;
-
+    private final String TAG = SetUpAlarmActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -58,15 +59,6 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         minutesAsleepSpinner.setAdapter(minutesAsleepAdapter);
         setUpSpinners(minutesAsleepSpinner, minutesAsleepArray, R.id.spinner_minutesOfFallingAsleep);
 
-        updateSongView();
-
-        // checking for the first time usage of the app
-        SharedPreferences checkUsage = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        final boolean firstUse = checkUsage.getBoolean(Configurator.FIRST_TIME_SET_UP,true);
-        if(firstUse){
-            showTips();
-        }
-
         Button browse = findViewById(R.id.browse);
         browse.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -87,6 +79,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         final TimePicker timePicker = findViewById(R.id.spinner_time_picker);
         if(DateFormat.is24HourFormat(this)){
             timePicker.setIs24HourView(true);
@@ -107,6 +100,9 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                     Configurator.knownWakeUpTimeConf.setHour(timePicker.getHour());
                     Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getMinute());
                 }
+                /*if the user forgets to choose a song, pick the last one he choose*/
+                SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+
                 Configurator.knownWakeUpTimeConf.setSleepCycles(cyclesValue);
                 Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(cyclesPosition_spinner);
                 Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(asleepMinutesValue);
@@ -117,12 +113,47 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                 Configurator.knownWakeUpTimeConf.setConfigured(true);
                 Configurator.knownWakeUpTimeConf.setAlarmState(true);
 
-                SharedPreferences savePreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-
-                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(savePreferences);
+                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(savedPreferences);
                 finish();
             }
         });
+
+        SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        boolean isConfigured = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false);
+        TextView title = findViewById(R.id.WakeUpTimeInfo_textView);
+
+        if (isConfigured) {
+            title.setText(getResources().getString(R.string.wakingUpTime));
+            create.setText(getResources().getString(R.string.changeAlarm));
+            sleepCyclesSpinner.setSelection(savedPreferences.getInt(Configurator.CYCLES_POSITION_SPINNER, 0));
+            minutesAsleepSpinner.setSelection(savedPreferences.getInt(Configurator.ASLEEP_POSITION_SPINNER, 0));
+
+            if(Build.VERSION.SDK_INT < 23){
+                timePicker.setCurrentHour(savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0));
+                timePicker.setCurrentMinute(savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0));
+            } else {
+                timePicker.setHour(savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0));
+                timePicker.setMinute(savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0));
+            }
+            if(Configurator.knownWakeUpTimeConf.getRingtoneName() == null)
+                Configurator.knownWakeUpTimeConf.setRingtoneName(savedPreferences.getString(Configurator.SONG_NAME_KNOWN_WAKE_UP, getResources().getString(R.string.noRingtoneSelected)));
+
+            updateSongView();
+            return;
+        }
+
+        create.setText(getResources().getString(R.string.createAlarm));
+        title = findViewById(R.id.WakeUpTimeInfo_textView);
+        title.setText(getResources().getString(R.string.selectWakeUpTime));
+
+        updateSongView();
+
+        // checking for the first time usage of the app
+        final boolean firstUse = savedPreferences.getBoolean(Configurator.FIRST_TIME_SET_UP,true);
+        if(firstUse){
+            showTips();
+        }
+
     }
 
     private void updateSongView(){
@@ -200,6 +231,8 @@ public class SetUpAlarmActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        Log.d(TAG, savedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.air_horn_in_close_hall_series)) + "  Macin resume");
         updateSongView();
     }
 

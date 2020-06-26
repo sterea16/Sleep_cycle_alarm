@@ -4,6 +4,7 @@
     package="com.sterea.sleepcyclealarm">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
         android:fullBackupContent="true"
@@ -15,13 +16,11 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".SongListActivity"
-            android:theme="@style/DialogActivityTheme"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/DialogActivityTheme" />
         <activity android:name=".SetUpAlarmActivity"
-            android:theme="@style/DialogActivityTheme"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/DialogActivityTheme" />
         <activity android:name=".AlarmActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

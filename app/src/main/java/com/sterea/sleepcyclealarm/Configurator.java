@@ -7,16 +7,16 @@ import java.util.Calendar;
 final class Configurator {
     private int sleepCycles;
     private int minutesFallingAsleep;
-    private int rawSongId;
-    private String ringtoneName;
     private int songIndexPosition; //save the checked radio button of the song list
     private int itemPositionSpinnerCycles, itemPositionSpinnerMinutesAsleep;
     private int hour, minutes;
+    private String rawFileSongName;
+    private String ringtoneName;
     private Calendar wakeUpTime;
     private Calendar bedTime;
     private Boolean isConfigured;
     private Boolean alarmState; //true for alarm on, false for alarm off
-    private Boolean confChanged; //used in onResume method of MainActivity to check for needed update of textViews
+    private Boolean confChanged; //used in onResume method of fragments to check for needed update of textViews
 
     /*Sate for the shared preferences file
     * Below are listed al the keys of the shared preferences file
@@ -25,12 +25,13 @@ final class Configurator {
     static final String SAVED_CONFIGURATION = "com.sterea.sleepcyclealarm";
     static final String HOUR_KNOWN_WAKE_UP = "wake up hour for known wake up time configuration";
     static final String MINUTES_KNOWN_WAKE_UP = "wake up minutes for known wake up configuration";
+    static final String WAKING_HOUR_KNOWN_WAKE_UP = "wakingHour";
+    static final String RAW_FILE_NAME_KNOWN_WAKE_UP = "songId";
+    static final String SONG_NAME_KNOWN_WAKE_UP = "songName";
     static final String IS_KNOWN_WAKE_UP_CONFIGURED = "isConfiguredKnownWakeUp";
     static final String IS_KNOWN_WAKE_UP_ALARM_STATE = "theStateOfTheAlarmForKnownWakeUpTime";
     static final String CYCLES_INT_VALUE = "cyclesIntValue";
     static final String ASLEEP_INT_VALUE = "asleepIntValue";
-    static final String WAKING_HOUR = "wakingHour";
-    static final String SONG_RAW_ID = "song";
     /*These keys are used in SetUpAlarmActivity to display the configuration already done*/
     static final String CYCLES_POSITION_SPINNER = "cyclePositionSpinner";
     static final String ASLEEP_POSITION_SPINNER = "asleepPositionSpinner";
@@ -61,6 +62,8 @@ final class Configurator {
         editor.putInt(Configurator.ASLEEP_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
         editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, Configurator.knownWakeUpTimeConf.getConfigured());
         editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, Configurator.knownWakeUpTimeConf.getAlarmState());
+        editor.putString(Configurator.SONG_NAME_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getRingtoneName());
+        editor.putString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getRawFileSongName());
         editor.apply();
     }
 
@@ -77,9 +80,9 @@ final class Configurator {
     /*create calendar objects for bed time for knownWakeUpConfig object;
      * it can be called either from SetUpAlarmActivity on Create button listener
      * or in MainActivity using the shared preferences file*/
-    void setBedTime(Calendar wakeUpTime, int cycles, int asleepMinutes){
+    void setBedTime(@org.jetbrains.annotations.NotNull Calendar wakeUpTime, int cycles, int asleepMinutes){
         bedTime = (Calendar) wakeUpTime.clone();
-        bedTime.add(Calendar.MINUTE, -(cycles * 90) - asleepMinutes);
+        bedTime.add(Calendar.MINUTE, -((cycles * 90) + asleepMinutes));
     }
 
     /*overload method, used only for knownBedTimeConfig object*/
@@ -95,8 +98,8 @@ final class Configurator {
         this.minutesFallingAsleep = minutesFallingAsleep;
     }
 
-    void setRawSongId(int rawSongId) {
-        this.rawSongId = rawSongId;
+    void setRawFileSongName(String rawFileSongName) {
+        this.rawFileSongName = rawFileSongName;
     }
 
     void setRingtoneName(String ringtoneName) {
@@ -127,8 +130,8 @@ final class Configurator {
         return minutesFallingAsleep;
     }
 
-    int getRawSongId() {
-        return rawSongId;
+    String getRawFileSongName() {
+        return rawFileSongName;
     }
 
     String getRingtoneName() {
