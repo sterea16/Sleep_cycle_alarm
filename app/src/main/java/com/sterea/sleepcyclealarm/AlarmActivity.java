@@ -2,17 +2,18 @@ package com.sterea.sleepcyclealarm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-
 
 
 public class AlarmActivity extends AppCompatActivity {
@@ -26,10 +27,22 @@ public class AlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm_layout);
 
         //pops out the activity even if the phone is on lock screen
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        /* screen state here:
+         * https://developer.android.com/reference/android/view/Display#STATE_DOZE_SUSPEND
+         * STATE_OFF = 1
+         * STATE_ON = 2
+         * STATE_DOZE = 3
+         * STATE_DOZE_SUSPENDED = 4 */
+        int displayState = getWindowManager().getDefaultDisplay().getState();
+        Log.d("AlarmClass", Integer.toString(displayState));
+        if(displayState != 2) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override
@@ -48,7 +61,7 @@ public class AlarmActivity extends AppCompatActivity {
         }
 
         textWakeUp = findViewById(R.id.text_Wake_Up);
-        dismissButton = findViewById(R.id.DismissButton);
+        dismissButton = findViewById(R.id.dismissButton);
         dismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

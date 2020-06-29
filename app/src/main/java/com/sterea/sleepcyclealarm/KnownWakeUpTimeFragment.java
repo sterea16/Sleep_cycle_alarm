@@ -20,7 +20,6 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
-import com.sterea.sleepcyclealarm.model.alarm.AlarmReceiver;
 
 import java.text.DateFormat;
 import java.util.Calendar;

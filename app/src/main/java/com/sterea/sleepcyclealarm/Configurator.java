@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 
 import java.util.Calendar;
 
-final class Configurator {
+public final class Configurator {
     private int sleepCycles;
     private int minutesFallingAsleep;
     private int songIndexPosition; //save the checked radio button of the song list
