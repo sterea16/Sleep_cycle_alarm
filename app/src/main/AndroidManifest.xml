@@ -4,7 +4,7 @@
     package="com.sterea.sleepcyclealarm">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:fullBackupContent="true"
@@ -33,7 +33,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".model.alarm.AlarmReceiver" />
+        <receiver android:name=".AlarmReceiver" />
+        <receiver android:name=".RebootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="preloaded_fonts"

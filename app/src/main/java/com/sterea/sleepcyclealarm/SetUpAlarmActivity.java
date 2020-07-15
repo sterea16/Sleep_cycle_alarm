@@ -231,8 +231,6 @@ public class SetUpAlarmActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        Log.d(TAG, savedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.air_horn_in_close_hall_series)) + "  Macin resume");
         updateSongView();
     }
 

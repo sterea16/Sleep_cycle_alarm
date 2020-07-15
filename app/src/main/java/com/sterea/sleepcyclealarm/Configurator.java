@@ -4,7 +4,8 @@ import android.content.SharedPreferences;
 
 import java.util.Calendar;
 
-final class Configurator {
+public final class Configurator {
+
     private int sleepCycles;
     private int minutesFallingAsleep;
     private int songIndexPosition; //save the checked radio button of the song list
@@ -18,32 +19,32 @@ final class Configurator {
     private Boolean alarmState; //true for alarm on, false for alarm off
     private Boolean confChanged; //used in onResume method of fragments to check for needed update of textViews
 
-    /*Sate for the shared preferences file
+    /**Sate for the shared preferences file
     * Below are listed al the keys of the shared preferences file
     * SAVED_CONFIGURATION is the file name
-    * FIRST_TIME_SET_UP is the key to check if the set up dialog activity was opened for the first time ever*/
-    static final String SAVED_CONFIGURATION = "com.sterea.sleepcyclealarm";
+    * FIRST_TIME_SET_UP is the key to check if the set up dialog activity was opened for the first time ever. */
+    static final String SAVED_CONFIGURATION = "com.sterea.sleepcyclealarm";//file name
+
+    /**known wake up time configuration keys**/
     static final String HOUR_KNOWN_WAKE_UP = "wake up hour for known wake up time configuration";
     static final String MINUTES_KNOWN_WAKE_UP = "wake up minutes for known wake up configuration";
-    static final String WAKING_HOUR_KNOWN_WAKE_UP = "wakingHour";
     static final String RAW_FILE_NAME_KNOWN_WAKE_UP = "songId";
     static final String SONG_NAME_KNOWN_WAKE_UP = "songName";
     static final String IS_KNOWN_WAKE_UP_CONFIGURED = "isConfiguredKnownWakeUp";
     static final String IS_KNOWN_WAKE_UP_ALARM_STATE = "theStateOfTheAlarmForKnownWakeUpTime";
-    static final String CYCLES_INT_VALUE = "cyclesIntValue";
-    static final String ASLEEP_INT_VALUE = "asleepIntValue";
-    /*These keys are used in SetUpAlarmActivity to display the configuration already done*/
+    static final String CYCLES_INT_VALUE_KNOWN_WAKE_UP = "cyclesIntValue";
+    static final String ASLEEP_INT_VALUE_KNOWN_WAKE_UP = "asleepIntValue";
+    final static String SNOOZE_STATE_KNOWN_WAKE_UP = "knownWakeUpTimeIntentKey";
+    final static int KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE = 1;
+
+    /*These keys are used in SetUpAlarmActivity to display a saved configuration. */
     static final String CYCLES_POSITION_SPINNER = "cyclePositionSpinner";
     static final String ASLEEP_POSITION_SPINNER = "asleepPositionSpinner";
     /*Used to show a guide when the app is first time used*/
     static final String FIRST_TIME_SET_UP = "firstTimeSetUp";
 
-    static int[] song = {R.raw.air_horn_in_close_hall_series, R.raw.allthat, R.raw.anewbeginning, R.raw.ceausescu_alo,
-            R.raw.cig_swaag, R.raw.creativeminds, R.raw.dubstep, R.raw.funnysong,
-            R.raw.hey, R.raw.skull_fire, R.raw.spaceship_alarm, R.raw.summer};
-
-    static Configurator knownBedTimeConf = new Configurator(6, 14, 5, 9);
-    static Configurator knownWakeUpTimeConf = new Configurator(6, 14, 5, 9);
+    static final Configurator knownBedTimeConf = new Configurator(6, 14, 5, 9);
+    static final Configurator knownWakeUpTimeConf = new Configurator(6, 14, 5, 9);
 
     private Configurator(int defSleepCycles, int defFallingAsleep, int itemPositionSpinnerCycles, int itemPositionSpinnerMinutesAsleep){
         sleepCycles = defSleepCycles;
@@ -56,8 +57,8 @@ final class Configurator {
         SharedPreferences.Editor editor = savedPreferences.edit();
         editor.putInt(Configurator.HOUR_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getHour());
         editor.putInt(Configurator.MINUTES_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getMinutes());
-        editor.putInt(Configurator.CYCLES_INT_VALUE, Configurator.knownWakeUpTimeConf.getSleepCycles());
-        editor.putInt(Configurator.ASLEEP_INT_VALUE, Configurator.knownWakeUpTimeConf.getMinutesFallingAsleep());
+        editor.putInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getSleepCycles());
+        editor.putInt(Configurator.ASLEEP_INT_VALUE_KNOWN_WAKE_UP, Configurator.knownWakeUpTimeConf.getMinutesFallingAsleep());
         editor.putInt(Configurator.CYCLES_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerCycles());
         editor.putInt(Configurator.ASLEEP_POSITION_SPINNER, Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
         editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, Configurator.knownWakeUpTimeConf.getConfigured());
@@ -67,9 +68,7 @@ final class Configurator {
         editor.apply();
     }
 
-    /*create calendar objects for wake up time;
-    * it can be called either from SetUpAlarmActivity on Create button listener
-    * or in MainActivity using the shared preferences file*/
+    /*Create calendar objects for wake up time.*/
     void setWakeUpTime(int hour, int minutes){
         this.wakeUpTime = Calendar.getInstance();
         wakeUpTime.set(Calendar.HOUR_OF_DAY, hour);
@@ -85,7 +84,7 @@ final class Configurator {
         bedTime.add(Calendar.MINUTE, -((cycles * 90) + asleepMinutes));
     }
 
-    /*overload method, used only for knownBedTimeConfig object*/
+    /*Overloaded method, used only for knownBedTimeConfig object*/
     void setBedTime(Calendar bedTime){
         this.bedTime = bedTime;
     }
