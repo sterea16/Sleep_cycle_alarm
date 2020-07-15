@@ -2,32 +2,32 @@ package com.sterea.sleepcyclealarm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.display.DisplayManager;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.TextView;
+
+import java.util.Calendar;
 
 
 public class AlarmActivity extends AppCompatActivity {
-    private TextView textWakeUp;
-    private Button dismissButton;
     private MediaPlayer r;
-    final static String TAG  = AlarmActivity.class.getSimpleName();
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_layout);
 
-        //pops out the activity even if the phone is on lock screen
-        /* screen state here:
+        /* Pops out the activity even if the phone is on lock screen.
+         * screen state here:
          * https://developer.android.com/reference/android/view/Display#STATE_DOZE_SUSPEND
          * STATE_OFF = 1
          * STATE_ON = 2
@@ -43,13 +43,11 @@ public class AlarmActivity extends AppCompatActivity {
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        Intent intent = getIntent();
+        final int alarmType = 1;
+
         SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        Log.d(TAG, savedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.ceausescu_alo)) + " Macin");
         String fileName = savedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.ceausescu_alo));
         //setting up the ringtone notification
         int songId = getResources().getIdentifier(fileName, "raw", getPackageName());
@@ -60,8 +58,7 @@ public class AlarmActivity extends AppCompatActivity {
             r.start();
         }
 
-        textWakeUp = findViewById(R.id.text_Wake_Up);
-        dismissButton = findViewById(R.id.dismissButton);
+        Button dismissButton = findViewById(R.id.dismissButton);
         dismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,7 +67,14 @@ public class AlarmActivity extends AppCompatActivity {
                 SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
                 SharedPreferences.Editor editor = savedPreferences.edit();
                 editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
+                editor.putBoolean(Configurator.SNOOZE_STATE_KNOWN_WAKE_UP, false);
                 editor.apply();
+                int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
+                int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
+                Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
+                Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), AlarmActivity.this, alarmType);
+                alarm.cancelAlarm();
+
                 if(r != null && r.isPlaying()) {
                     r.pause();
                     r.release();
@@ -79,6 +83,30 @@ public class AlarmActivity extends AppCompatActivity {
                 finish();
                 Intent i = new Intent(AlarmActivity.this, MainActivity.class);
                 startActivity(i);
+            }
+        });
+
+        Button snoozeButton = findViewById(R.id.snooze_button);
+        String text = getResources().getString(R.string.snooze);
+        SpannableString s = new SpannableString(text);
+        s.setSpan(new StyleSpan(Typeface.ITALIC), 6, 13, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        s.setSpan(new RelativeSizeSpan(0.85f), 6, 13, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        snoozeButton.setText(s);
+
+        snoozeButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Calendar snoozeTime = Calendar.getInstance();
+                Alarm alarm = new Alarm(snoozeTime, AlarmActivity.this, alarmType);
+                alarm.snoozeAlarm();
+
+                if(r != null && r.isPlaying()) {
+                    r.pause();
+                    r.release();
+                    r = null;
+                }
+                finish();
+
             }
         });
     }
