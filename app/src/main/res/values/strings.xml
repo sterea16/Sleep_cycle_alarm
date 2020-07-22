@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">Sleep cycle alarm</string>
-
     <string name="noAlarmSet">No alarm set</string>
 
     <!--Generals-->
         <string name="setUpAlarm">Set up</string>
-        <string name="cancel_all_alarms">Cancel alarms</string>
         <string name="alarmOn">Alarm ON</string>
         <string name="alarmOff">Alarm OFF</string>
         <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
@@ -14,6 +12,8 @@
         <string name="dismiss">Dismiss</string>
         <string name="wakeUp">WAKE UP!</string>
         <string name="snooze">Snooze\n 5 min</string>
+        <string name="alarm_snoozed">Alarm snoozed</string>
+        <string name="cancel_alarm">Cancel alarm</string>
 
     <!--Known waking up time strings card view strings-->
         <string name="bed_time_text_1">Alarm set for</string>
@@ -67,4 +67,14 @@
         <string name="song_spaceship_alarm">Spaceship alarm</string>
         <string name="song_summer">Summer</string>
 
+    <!--Alarm-->
+        <string name="channel_name_alarm">Alarm notification</string>
+        <string name="channel_description_alarm">Make alarms sound and pop out.</string>
+        <string name="channel_name_reminder">Bed time reminder notification</string>
+        <string name="channel_description_reminder">Notification which reminds that bed time comes soon.</string>
+        <string name="channel_name_snooze">Snooze notification</string>
+        <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>
+
+        <string name="notification_title_snooze">Alarm snoozed</string>
+        <string name="notification_content_snooze">Alarm is snoozed for 5 minutes.</string>
 </resources>

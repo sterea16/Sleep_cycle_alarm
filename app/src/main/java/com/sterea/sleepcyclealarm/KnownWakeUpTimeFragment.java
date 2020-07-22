@@ -170,11 +170,9 @@ public class KnownWakeUpTimeFragment extends Fragment {
                         + getResources().getString(R.string.bed_time_text_2) + " " + bedTimeText + "\n"
                         + getResources().getString(R.string.bed_time_text_3) + " " + savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0));
                 if(minutes == 0 ){
-                    text.append(" (" + hours + "h)\n"
-                            + getResources().getString(R.string.tips));
+                    text.append(" (").append(hours).append("h)\n").append(getResources().getString(R.string.tips));
                 } else {
-                    text.append(" (" + hours + "h " + minutes + "min)\n"
-                            + getResources().getString(R.string.tips));
+                    text.append(" (").append(hours).append("h ").append(minutes).append("min)\n").append(getResources().getString(R.string.tips));
                 }
                 /* Format the text.
                  * Styling position depends on date and time format (am/pm or 24 hour). */
@@ -293,7 +291,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
 
         if(Configurator.knownWakeUpTimeConf.getRawFileSongName() == null) {
             SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-            Configurator.knownWakeUpTimeConf.setRawFileSongName(sharedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.air_horn_in_close_hall_series)));
+            Configurator.knownWakeUpTimeConf.setRawFileSongName(sharedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.summer)));
         }
     }
 }

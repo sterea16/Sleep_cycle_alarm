@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -33,7 +32,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.set_up_alarm_layout);
+        setContentView(R.layout.activity_set_up_alarm_layout);
         getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         /*create arrays to populate the spinners*/
@@ -100,7 +99,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                     Configurator.knownWakeUpTimeConf.setHour(timePicker.getHour());
                     Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getMinute());
                 }
-                /*if the user forgets to choose a song, pick the last one he choose*/
+
                 SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
 
                 Configurator.knownWakeUpTimeConf.setSleepCycles(cyclesValue);
@@ -128,7 +127,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             sleepCyclesSpinner.setSelection(savedPreferences.getInt(Configurator.CYCLES_POSITION_SPINNER, 0));
             minutesAsleepSpinner.setSelection(savedPreferences.getInt(Configurator.ASLEEP_POSITION_SPINNER, 0));
 
-            if(Build.VERSION.SDK_INT < 23){
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
                 timePicker.setCurrentHour(savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0));
                 timePicker.setCurrentMinute(savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0));
             } else {

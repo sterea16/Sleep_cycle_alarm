@@ -23,7 +23,7 @@ public class SongListActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.song_list_activity_layout);
+        setContentView(R.layout.activity_song_list_layout);
 
         RadioGroup radioGroup = findViewById(R.id.group_radio_songs);
 
