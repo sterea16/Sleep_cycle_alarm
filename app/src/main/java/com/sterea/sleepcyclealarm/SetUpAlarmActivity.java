@@ -87,6 +87,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         }
 
         /*Saving the user alarm configuration by storing the data in a SharedPreferences object*/
+        //TODO on first time use this button is CHANGE instead of CREATE so need to be fixed
         Button create = findViewById(R.id.create_alarm_wake_up_time);
         create.setOnClickListener(new View.OnClickListener() {
             @Override

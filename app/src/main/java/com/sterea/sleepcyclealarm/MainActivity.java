@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -12,7 +13,8 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     /*TODO Create a Preference hierarchy (a.k.a settings fragment) for notifications and sleep cycle value
-    *  https://developer.android.com/guide/topics/ui/settings*/
+    *  https://developer.android.com/guide/topics/ui/settings
+    * TODO Swipe to refresh https://developer.android.com/training/swipe*/
 
     @Override
     protected void onCreate(final Bundle savedInstanceState){
@@ -21,19 +23,22 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);//removes the title of the toolbar (this is the main activity and its label it's required in order to give a name to the app launcher)
-        // Create and register notifications channels
+
+        // Create and register notifications channels.
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
-            Alarm.AlarmNotification.createNotificationChannel(this, Alarm.AlarmNotification.ALARM_CHANNEL_ID,
+            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.ALARM_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_alarm),
                     getResources().getString(R.string.channel_description_alarm), NotificationManager.IMPORTANCE_HIGH);
 
-            Alarm.AlarmNotification.createNotificationChannel(this, Alarm.AlarmNotification.REMINDER_CHANNEL_ID,
+            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.REMINDER_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_reminder), getResources().getString(R.string.channel_description_reminder),
                     NotificationManagerCompat.IMPORTANCE_DEFAULT);
 
-            Alarm.AlarmNotification.createNotificationChannel(this, Alarm.AlarmNotification.SNOOZE_CHANNEL_ID,
+            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.SNOOZE_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_snooze), getResources().getString(R.string.channel_description_snooze),
                     NotificationManagerCompat.IMPORTANCE_LOW);
         }
+
     }
+
 }

@@ -73,7 +73,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
                         Configurator.knownWakeUpTimeConf.setAlarmState(true);
                         updateKnownUpTimeCardView(savedPreferences);
                         Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), getContext(), Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
-                        alarm.startAlarm();
+                        alarm.registerAlarm();
                         Toast toast = Toast.makeText(getContext(), getResources().getString(R.string.alarmOn), Toast.LENGTH_SHORT);
                         toast.show();
                     } else {
@@ -206,7 +206,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
                 textView.setText(ss);
 
                 Alarm alarm = new Alarm (Configurator.knownWakeUpTimeConf.getWakeUpTime(), getContext(), Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
-                alarm.startAlarm();
+                alarm.registerAlarm();
             } else {
                 if (knowWakeUpTime_switch.isChecked()) {
                     knowWakeUpTime_switch.setChecked(false);

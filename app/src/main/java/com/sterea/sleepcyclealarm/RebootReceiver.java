@@ -19,7 +19,7 @@ public class RebootReceiver extends BroadcastReceiver {
             int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
             Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
             Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), context, Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
-            alarm.startAlarm();
+            alarm.registerAlarm();
             Log.d(TAG, "reboot receiver on! Macin");
         }
     }
