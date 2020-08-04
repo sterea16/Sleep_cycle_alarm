@@ -27,7 +27,6 @@ class AlarmNotification  {
     final static String REMINDER = AlarmNotification.class.getSimpleName() + "REMINDER";
     static MediaPlayer ringtone = null;
     private static AlarmActivity alarmActivityInstance = null;
-    static int dynamicNotificationId;
 
     private int notificationId;
     private String type;
@@ -148,9 +147,7 @@ class AlarmNotification  {
             notificationManager.cancel(notificationId);
             notificationManager.notify(notificationId, notification);
         }
-        /* If the ringtone isn't null this means this is a snooze notification.
-        * In this case there is no need to start a new ringtone and also
-        * there isn't the case to register a new ScreeStateReceiver.*/
+
         if(!type.equals(SNOOZE)) {
             //setting up the ringtone notification
             SharedPreferences savedPreferences = context.getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
@@ -162,7 +159,6 @@ class AlarmNotification  {
             ringtone.start();
 
             //register a screen of receiver so the alarm wil be snoozed in this case
-            dynamicNotificationId = notificationId;
             IntentFilter screenStateIntent = new IntentFilter(Intent.ACTION_SCREEN_OFF);
             context.getApplicationContext().registerReceiver(new ScreenStateReceiver(), screenStateIntent);
 
@@ -177,7 +173,7 @@ class AlarmNotification  {
         editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
         editor.putBoolean(Configurator.SNOOZE_STATE_KNOWN_WAKE_UP, false);
         editor.apply();
-
+        Log.d("actionDismiss", "Macin " + notificationId);
         int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
         int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
         Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);

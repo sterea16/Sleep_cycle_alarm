@@ -47,10 +47,11 @@ final class Alarm {
         intent.putExtra(REQUEST_CODE_KEY, requestCode);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
                 intent, 0);
-
+        Log.d("registerAlarm", "Macin " + requestCode);
         if(time.before(Calendar.getInstance())){ //add 1 day to the input time if the user picks a time which is before the current time
             time.add(Calendar.DATE,1);
         }
+
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pendingIntent);
         settingRebootReceiver(true);
     }
@@ -59,10 +60,11 @@ final class Alarm {
         AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(context).getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(REQUEST_CODE_KEY, requestCode);
+        Log.d("cancelAlarm", "Macin " + requestCode);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
                     intent, 0);
-        pendingIntent.cancel();
         alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
         settingRebootReceiver(false);
     }
 

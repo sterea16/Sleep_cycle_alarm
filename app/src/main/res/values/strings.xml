@@ -3,80 +3,82 @@
     <string name="noAlarmSet">No alarm set</string>
 
     <!--Generals-->
-        <string name="alarm">Alarm</string>
-        <string name="wakeUp">WAKE UP!</string>
-        <string name="setUpAlarm">Set up</string>
-        <string name="alarmOn">Alarm ON</string>
-        <string name="alarmOff">Alarm OFF</string>
-        <string name="alarmDismissed">Alarm dismissed</string>
-        <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
+    <string name="alarm">Alarm</string>
+    <string name="wakeUp">WAKE UP!</string>
+    <string name="setUpAlarm">Set up</string>
+    <string name="alarmOn">Alarm ON</string>
+    <string name="alarmOff">Alarm OFF</string>
+    <string name="alarmDismissed">Alarm dismissed</string>
+    <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
 
     <!--AlarmActivity-->
-        <string name="dismiss">Dismiss</string>
-        <string name="snooze">Snooze\n 5 min</string>
-        <string name="alarm_snoozed">Alarm snoozed</string>
-        <string name="cancel_alarm">Cancel alarm</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze\n 5 min</string>
+    <string name="alarm_snoozed">Alarm snoozed</string>
+    <string name="cancel_alarm">Cancel alarm</string>
 
     <!--Known waking up time strings card view strings-->
-        <string name="bed_time_text_1">Alarm set for</string>
-        <string name="bed_time_text_2">Bed time:</string>
-        <string name="bed_time_text_3"> Sleep cycles:</string>
-        <string name="minutes">minutes</string>
-        <string name="minute">minute</string>
-        <string name="hour">hour</string>
-        <string name="hours">hours</string>
-        <string name="knownWakeUpTime_alarm_off_text_1">Waking up hour: </string>
-        <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
-        <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
-        <string name="napTimeText">Taking a nap.</string>
-        <string name="deleteDialog">Reset alarm configuration?</string>
-        <string name="positiveDialog">Reset</string>
-        <string name="negativeDialog">Cancel</string>
+    <string name="bed_time_text_1">Alarm set for</string>
+    <string name="bed_time_text_2">Bed time:</string>
+    <string name="bed_time_text_3"> Sleep cycles:</string>
+    <string name="minutes">minutes</string>
+    <string name="minute">minute</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="knownWakeUpTime_alarm_off_text_1">Waking up hour: </string>
+    <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
+    <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
+    <string name="napTimeText">Taking a nap.</string>
+    <string name="deleteDialog">Reset alarm configuration?</string>
+    <string name="positiveDialog">Reset</string>
+    <string name="negativeDialog">Cancel</string>
 
     <!--Known bed time card view strings-->
-        <string name="knownBedTimeText">Bed time now?\nCalculate <i>wake up time</i>.</string>
+    <string name="knownBedTimeText">Bed time now?\nCalculate <i>wake up time</i>.</string>
 
     <!--SetUpAlarmActivity-->
-        <string name="noRingtoneSelected">No ringtone selected</string>
-        <string name="selectWakeUpTime">Select a waking up time</string>
-        <string name="wakingUpTime">Waking up time set for:</string>
-        <string name="chooseARingtone">Choose a ringtone</string>
-        <string name="selectedRingtone">Selected ringtone</string>
-        <string name="sleepCycles">Number of sleep cycles: </string>
-        <string name="minutesFallingAsleep">Minutes for falling asleep: </string>
-        <string name="browse">browse</string>
-        <string name="createAlarm">Create</string>
-        <string name="changeAlarm">Change</string>
-        <string name="cancelCreatingAlarm">Cancel</string>
+    <string name="noRingtoneSelected">No ringtone selected</string>
+    <string name="selectWakeUpTime">Select a waking up time</string>
+    <string name="wakingUpTime">Waking up time set for:</string>
+    <string name="chooseARingtone">Choose a ringtone</string>
+    <string name="selectedRingtone">Selected ringtone</string>
+    <string name="sleepCycles">Number of sleep cycles: </string>
+    <string name="minutesFallingAsleep">Minutes for falling asleep: </string>
+    <string name="browse">browse</string>
+    <string name="createAlarm">Create</string>
+    <string name="changeAlarm">Change</string>
+    <string name="cancelCreatingAlarm">Cancel</string>
 
     <!--Alert dialog getting started
     //TODO Tips messages to be updated-->
-        <string name="alert_dialog_getting_started_title">Setting up your first alarm</string>
-        <string name="alert_dialog_getting_started_message">Be careful at sleep cycles and estimated time for falling asleep</string>
-        <string name="alert_dialog_getting_started_positiveButton">Got it!</string>
+    <string name="alert_dialog_getting_started_title">Setting up your first alarm</string>
+    <string name="alert_dialog_getting_started_message">Be careful at sleep cycles and estimated time for falling asleep</string>
+    <string name="alert_dialog_getting_started_positiveButton">Got it!</string>
 
     <!--song list-->
-        <string name="song_horn">Horn</string>
-        <string name="song_all_that"> All that</string>
-        <string name="song_a_new_beginning">A new beginning</string>
-        <string name="song_ceausescu">Ceauseascu</string>
-        <string name="song_cig_swaag">Cig swag</string>
-        <string name="song_creative_minds">Creative minds</string>
-        <string name="song_dubstep">Dubstep</string>
-        <string name="song_funny_song">Funny song</string>
-        <string name="song_hey">Hey!</string>
-        <string name="song_skull_fire">Skull fire</string>
-        <string name="song_spaceship_alarm">Spaceship alarm</string>
-        <string name="song_summer">Summer</string>
+    <string name="song_horn">Horn</string>
+    <string name="song_all_that"> All that</string>
+    <string name="song_a_new_beginning">A new beginning</string>
+    <string name="song_ceausescu">Ceauseascu</string>
+    <string name="song_cig_swaag">Cig swag</string>
+    <string name="song_creative_minds">Creative minds</string>
+    <string name="song_dubstep">Dubstep</string>
+    <string name="song_funny_song">Funny song</string>
+    <string name="song_hey">Hey!</string>
+    <string name="song_skull_fire">Skull fire</string>
+    <string name="song_spaceship_alarm">Spaceship alarm</string>
+    <string name="song_summer">Summer</string>
 
     <!--Alarm-->
-        <string name="channel_name_alarm">Alarm notification</string>
-        <string name="channel_description_alarm">Make alarms sound and pop out.</string>
-        <string name="channel_name_reminder">Bed time reminder notification</string>
-        <string name="channel_description_reminder">Notification which reminds that bed time comes soon.</string>
-        <string name="channel_name_snooze">Snooze notification</string>
-        <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>
+    <string name="channel_name_alarm">Alarm notification</string>
+    <string name="channel_description_alarm">Make alarms sound and pop out.</string>
+    <string name="channel_name_reminder">Bed time reminder notification</string>
+    <string name="channel_description_reminder">Notification which reminds that bed time comes soon.</string>
+    <string name="channel_name_snooze">Snooze notification</string>
+    <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>
 
-        <string name="notification_title_snooze">Alarm snoozed</string>
-        <string name="notification_content_snooze">Alarm is snoozed for 5 minutes.</string>
+    <string name="notification_title_snooze">Alarm snoozed</string>
+    <string name="notification_content_snooze">Alarm is snoozed for 5 minutes.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

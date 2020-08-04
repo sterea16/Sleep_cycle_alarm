@@ -79,6 +79,7 @@ public class AlarmActivity extends AppCompatActivity {
                 editor.putBoolean(Configurator.SNOOZE_STATE_KNOWN_WAKE_UP, false);
                 editor.apply();
 
+                Log.d("dismissListener", "Macin " + alarmType);
                 int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
                 int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
                 Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
