@@ -15,10 +15,10 @@ public class RebootReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             // Set the alarm here.
             SharedPreferences savedPreferences = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-            int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
-            int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
-            Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
-            Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), context, Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
+            int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0);
+            int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0);
+            Configurator.wakeUpTimeKnownConf.buildAlarmTime(hour, minutes);
+            Alarm alarm = new Alarm(Configurator.wakeUpTimeKnownConf.getAlarmTime(), context, Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
             alarm.registerAlarm();
             Log.d(TAG, "reboot receiver on! Macin");
         }

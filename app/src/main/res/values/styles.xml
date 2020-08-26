@@ -6,8 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="fontFamily">@font/custom_text_font_family</item>
+        <item name="android:textViewStyle">@style/CustomTextViewTextFonts</item>
     </style>
-    <style name="Material" parent="Widget.MaterialComponents.ExtendedFloatingActionButton"/>
 
     <style name="DialogActivityTheme" parent="Theme.AppCompat.Dialog">
         <!--custom shape for rounded corners-->
@@ -16,6 +17,17 @@
         <item name="android:backgroundDimAmount">0.1</item>
         <!--activated state color for radio button-->
         <item name="colorControlActivated">@color/colorPrimaryDark</item>
+        <!--Apply the same font as the entire app does-->
+        <item name="fontFamily">@font/custom_text_font_family</item>
+    </style>
+
+    <style name="CustomTextViewTextFonts" parent="Widget.AppCompat.TextView">
+        <item name="fontFamily">@font/custom_text_font_family</item>
+    </style>
+
+    <style name="CustomTextTabAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
 </resources>

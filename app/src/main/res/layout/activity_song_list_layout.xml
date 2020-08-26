@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -100,16 +100,11 @@
             android:textSize="20sp"/>
     </RadioGroup>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <View
             android:id="@+id/confirm_song"
-            android:layout_marginBottom="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/round_done_24"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            app:backgroundTint="@color/colorPrimaryDark"
-            app:fabSize="mini" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/custom_done_ripple"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

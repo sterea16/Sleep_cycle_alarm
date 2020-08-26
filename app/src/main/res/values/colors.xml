@@ -5,5 +5,6 @@
     <color name="colorAccent">#1B1C1C</color>
     <color name="custom_gray">#959497</color>
     <color name="custom_green">#388E3C</color>
-
+    <color name="colorSwitchOff">#C7CBCC</color>
+    <color name="colorWhite">#FFFFFF</color>
 </resources>

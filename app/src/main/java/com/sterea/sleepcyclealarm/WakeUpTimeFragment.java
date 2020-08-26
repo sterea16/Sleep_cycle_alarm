@@ -1,17 +1,14 @@
 package com.sterea.sleepcyclealarm;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -23,19 +20,15 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.switchmaterial.SwitchMaterial;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Objects;
-
 import static android.content.Context.MODE_PRIVATE;
-
-public class KnownWakeUpTimeFragment extends Fragment {
+public class WakeUpTimeFragment extends Fragment {
 
     private SwitchMaterial knowWakeUpTime_switch;
-    public KnownWakeUpTimeFragment() {
+    public WakeUpTimeFragment() {
         // Required empty public constructor
     }
 
@@ -43,7 +36,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_kown_wake_up_time, container, false);
+        return inflater.inflate(R.layout.fragment_wake_up_time_known, container, false);
     }
 
     @Override
@@ -56,29 +49,30 @@ public class KnownWakeUpTimeFragment extends Fragment {
                 SharedPreferences savedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
                 if(!isChecked){
                     SharedPreferences.Editor editor = savedPreferences.edit();
-                    editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
+                    editor.putBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false);
                     editor.apply();
-                    Configurator.knownWakeUpTimeConf.setAlarmState(false);
+                    Configurator.wakeUpTimeKnownConf.setAlarmState(false);
                     updateKnownUpTimeCardView(savedPreferences);
                     Alarm alarm = new Alarm(getContext());
                     alarm.cancelAlarm();
                     Toast toast = Toast.makeText(getContext(), getResources().getString(R.string.alarmOff), Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
-                    if(savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false)){
+                    if(savedPreferences.getBoolean(Configurator.IS_WAKE_UP_KNOWN_CONFIGURED, false)){
                         /* If there has been already a configuration, then just set up the alarm with that one. */
                         SharedPreferences.Editor editor = savedPreferences.edit();
-                        editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, true);
+                        editor.putBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, true);
                         editor.apply();
-                        Configurator.knownWakeUpTimeConf.setAlarmState(true);
+                        Configurator.wakeUpTimeKnownConf.setAlarmState(true);
                         updateKnownUpTimeCardView(savedPreferences);
-                        Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), getContext(), Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
+                        Alarm alarm = new Alarm(Configurator.wakeUpTimeKnownConf.getAlarmTime(), getContext(), Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                         alarm.registerAlarm();
                         Toast toast = Toast.makeText(getContext(), getResources().getString(R.string.alarmOn), Toast.LENGTH_SHORT);
                         toast.show();
                     } else {
                         /* Else start SetUpAlarmActivity to begin a new configuration. */
                         Intent i = new Intent(getContext(), SetUpAlarmActivity.class);
+                        i.putExtra(SetUpAlarmActivity.CHECK_ALARM_TYPE, Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                         startActivity(i);
                     }
                 }
@@ -90,6 +84,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), SetUpAlarmActivity.class);
+                i.putExtra(SetUpAlarmActivity.CHECK_ALARM_TYPE, Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                 startActivity(i);
             }
         });
@@ -97,22 +92,22 @@ public class KnownWakeUpTimeFragment extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
-                alertDialog.setMessage(R.string.deleteDialog)
+                alertDialog.setMessage(R.string.removeDialog)
                         .setPositiveButton(R.string.positiveDialog, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 SharedPreferences savedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-                                Configurator.knownWakeUpTimeConf.setSleepCycles(6);
-                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(5);
-                                Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(14);
-                                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(9);
-                                Configurator.knownWakeUpTimeConf.setConfigured(false);
-                                Configurator.knownWakeUpTimeConf.setAlarmState(false);
-                                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(savedPreferences);
+                                Configurator.wakeUpTimeKnownConf.setSleepCycles(6)
+                                            .setItemPositionSpinnerCycles(5)
+                                            .setMinutesFallingAsleep(14)
+                                            .setItemPositionSpinnerMinutesAsleep(9)
+                                            .setConfigured(false)
+                                            .setAlarmState(false)
+                                            .updateSavedConfiguration(savedPreferences, Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                                 knowWakeUpTime_switch.setChecked(false);
                                 SpannableStringBuilder ss = new SpannableStringBuilder(getResources().getString(R.string.knownWakeUpTimeText));
                                 ss.setSpan(new StyleSpan(Typeface.ITALIC), 41, 49, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                TextView textView = getActivity().findViewById(R.id.knownWakeUp_textView);
+                                TextView textView = getActivity().findViewById(R.id.knownBedTime_textView);
                                 textView.setText(ss);
                             }
                         })
@@ -127,16 +122,16 @@ public class KnownWakeUpTimeFragment extends Fragment {
             }
         });
 
-        if(Configurator.knownWakeUpTimeConf.getWakeUpTime() == null){
+        if(Configurator.wakeUpTimeKnownConf.getAlarmTime() == null){
             SharedPreferences  savedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
             updateKnownUpTimeCardView(savedPreferences);
         }
     }
 
     private void updateKnownUpTimeCardView(SharedPreferences savedPreferences){
-        boolean configured = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false);
+        boolean configured = savedPreferences.getBoolean(Configurator.IS_WAKE_UP_KNOWN_CONFIGURED, false);
         if(configured) {
-            boolean alarmState = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
+            boolean alarmState = savedPreferences.getBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false);
             if (alarmState) {
                 if (!knowWakeUpTime_switch.isChecked()) {
                     knowWakeUpTime_switch.setChecked(true);
@@ -147,28 +142,28 @@ public class KnownWakeUpTimeFragment extends Fragment {
                     return;
                 }
 
-                if (Configurator.knownWakeUpTimeConf.getWakeUpTime() == null) {
-                    int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
-                    int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
-                    Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
+                if (Configurator.wakeUpTimeKnownConf.getAlarmTime() == null) {
+                    int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0);
+                    int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0);
+                    Configurator.wakeUpTimeKnownConf.buildAlarmTime(hour, minutes);
                 }
-                Calendar wakeUpTime = Configurator.knownWakeUpTimeConf.getWakeUpTime();
+                Calendar wakeUpTime = Configurator.wakeUpTimeKnownConf.getAlarmTime();
                 String wakeUpTimeText = DateFormat.getTimeInstance(DateFormat.SHORT).format(wakeUpTime.getTime());
 
-                if (Configurator.knownWakeUpTimeConf.getBedTime() == null) {
-                    int cycles = savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0);
-                    int asleep = savedPreferences.getInt(Configurator.ASLEEP_INT_VALUE_KNOWN_WAKE_UP, 0);
-                    Configurator.knownWakeUpTimeConf.setBedTime(wakeUpTime, cycles, asleep);
+                if (Configurator.wakeUpTimeKnownConf.getBedTime() == null) {
+                    int cycles = savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP_KEY, 0);
+                    int asleep = savedPreferences.getInt(Configurator.ASLEEP_INT_VALUE_KNOWN_WAKE_UP_KEY, 0);
+                    Configurator.wakeUpTimeKnownConf.calcBedTime(wakeUpTime, cycles, asleep);
                 }
-                Calendar bedTime = Configurator.knownWakeUpTimeConf.getBedTime();
+                Calendar bedTime = Configurator.wakeUpTimeKnownConf.getBedTime();
                 String bedTimeText = DateFormat.getTimeInstance(DateFormat.SHORT).format(bedTime.getTime());
-                int[] hourMinutes = calcHourMinuteSleepingTime(savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0));
+                int[] hourMinutes = calcHourMinuteSleepingTime(savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP_KEY, 0));
                 int hours = hourMinutes[0];
                 int minutes = hourMinutes[1];
 
                 StringBuilder text = new StringBuilder(getResources().getString(R.string.bed_time_text_1) + " " + wakeUpTimeText + "\n"
                         + getResources().getString(R.string.bed_time_text_2) + " " + bedTimeText + "\n"
-                        + getResources().getString(R.string.bed_time_text_3) + " " + savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0));
+                        + getResources().getString(R.string.bed_time_text_3) + " " + savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP_KEY, 0));
                 if(minutes == 0 ){
                     text.append(" (").append(hours).append("h)\n").append(getResources().getString(R.string.tips));
                 } else {
@@ -188,7 +183,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
                 ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.custom_green)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 start = end + 1 +  getResources().getString(R.string.bed_time_text_3).length() + 1;
-                end = start + Integer.toString(savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0)).length();
+                end = start + Integer.toString(savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP_KEY, 0)).length();
                 ss.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.custom_green)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -202,10 +197,10 @@ public class KnownWakeUpTimeFragment extends Fragment {
                 ss.setSpan(new RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.custom_gray)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                TextView textView = Objects.requireNonNull(getView()).findViewById(R.id.knownWakeUp_textView);
+                TextView textView = Objects.requireNonNull(getView()).findViewById(R.id.knownBedTime_textView);
                 textView.setText(ss);
 
-                Alarm alarm = new Alarm (Configurator.knownWakeUpTimeConf.getWakeUpTime(), getContext(), Configurator.KNOWN_WAKE_UP_TIME_ALARM_REQ_CODE);
+                Alarm alarm = new Alarm (Configurator.wakeUpTimeKnownConf.getAlarmTime(), getContext(), Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                 alarm.registerAlarm();
             } else {
                 if (knowWakeUpTime_switch.isChecked()) {
@@ -214,20 +209,20 @@ public class KnownWakeUpTimeFragment extends Fragment {
                      * so a new call of this method will begin and the first one needs to be stopped where it was left off. */
                     return;
                 }
-                if (Configurator.knownWakeUpTimeConf.getWakeUpTime() == null) {
-                    int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
-                    int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
-                    Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
+                if (Configurator.wakeUpTimeKnownConf.getAlarmTime() == null) {
+                    int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0);
+                    int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0);
+                    Configurator.wakeUpTimeKnownConf.buildAlarmTime(hour, minutes);
                 }
-                Calendar wakeUpTime = Configurator.knownWakeUpTimeConf.getWakeUpTime();
+                Calendar wakeUpTime = Configurator.wakeUpTimeKnownConf.getAlarmTime();
                 String wakeUpTimeText = DateFormat.getTimeInstance(DateFormat.SHORT).format(wakeUpTime.getTime());
 
-                if (Configurator.knownWakeUpTimeConf.getBedTime() == null) {
-                    int cycles = savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP, 0);
-                    int asleep = savedPreferences.getInt(Configurator.ASLEEP_INT_VALUE_KNOWN_WAKE_UP, 0);
-                    Configurator.knownWakeUpTimeConf.setBedTime(wakeUpTime, cycles, asleep);
+                if (Configurator.wakeUpTimeKnownConf.getBedTime() == null) {
+                    int cycles = savedPreferences.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_WAKE_UP_KEY, 0);
+                    int asleep = savedPreferences.getInt(Configurator.ASLEEP_INT_VALUE_KNOWN_WAKE_UP_KEY, 0);
+                    Configurator.wakeUpTimeKnownConf.calcBedTime(wakeUpTime, cycles, asleep);
                 }
-                Calendar bedTime = Configurator.knownWakeUpTimeConf.getBedTime();
+                Calendar bedTime = Configurator.wakeUpTimeKnownConf.getBedTime();
                 String bedTimeText = DateFormat.getTimeInstance(DateFormat.SHORT).format(bedTime.getTime());
 
                 String text = getResources().getString(R.string.knownWakeUpTime_alarm_off_text_1) + " " + wakeUpTimeText +"\n"
@@ -253,7 +248,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
                 ss.setSpan(new RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.custom_gray)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                TextView textView = Objects.requireNonNull(getView()).findViewById(R.id.knownWakeUp_textView);
+                TextView textView = Objects.requireNonNull(getView()).findViewById(R.id.knownBedTime_textView);
                 textView.setText(ss);
             }
         }
@@ -267,6 +262,7 @@ public class KnownWakeUpTimeFragment extends Fragment {
             totalSleepingTime -= i;
             ++hours;
         }
+
         minutes = totalSleepingTime;
         int[] hourMinutes = new int[2];
         hourMinutes[0] = hours;
@@ -279,19 +275,19 @@ public class KnownWakeUpTimeFragment extends Fragment {
         super.onResume();
         /* Run the updateKnowUpTimeCardView() method from onResume() only if there are changes on the configuration.
          * If so, this will run after SetUpActivity's onDestroy() method has finished. */
-        if(Configurator.knownWakeUpTimeConf.getConfChanged() != null){
+        if(Configurator.wakeUpTimeKnownConf.getConfChanged() != null){
             SharedPreferences savedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-            if(Configurator.knownWakeUpTimeConf.getConfChanged()) {
+            if(Configurator.wakeUpTimeKnownConf.getConfChanged()) {
                 updateKnownUpTimeCardView(savedPreferences);
-                Configurator.knownWakeUpTimeConf.setConfChanged(false);
-            } else if (!savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false)) {
+                Configurator.wakeUpTimeKnownConf.setConfChanged(false);
+            } else if (!savedPreferences.getBoolean(Configurator.IS_WAKE_UP_KNOWN_CONFIGURED, false)) {
                 knowWakeUpTime_switch.setChecked(false);
             }
         }
 
-        if(Configurator.knownWakeUpTimeConf.getRawFileSongName() == null) {
+        if(Configurator.wakeUpTimeKnownConf.getRawFileSongName() == null) {
             SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-            Configurator.knownWakeUpTimeConf.setRawFileSongName(sharedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP, getResources().getResourceName(R.raw.summer)));
+            Configurator.wakeUpTimeKnownConf.setRawFileSongName(sharedPreferences.getString(Configurator.RAW_FILE_NAME_KNOWN_WAKE_UP_KEY, getResources().getResourceName(R.raw.summer)));
         }
     }
 }

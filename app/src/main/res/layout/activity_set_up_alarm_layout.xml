@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp">
+
         <TextView
             android:id="@+id/WakeUpTimeInfo_textView"
             android:layout_width="wrap_content"
@@ -35,12 +36,14 @@
             android:id="@+id/textView_sleepCycle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:text="@string/sleepCycles"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_time_picker"
-            app:layout_constraintEnd_toStartOf="@+id/spinner_numberSleepCycles"/>
+            app:layout_constraintEnd_toStartOf="@+id/spinner_numberSleepCycles"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"/>
 
         <Spinner
             android:id="@+id/spinner_numberSleepCycles"
@@ -50,7 +53,8 @@
             app:layout_constraintTop_toTopOf="@+id/textView_sleepCycle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textView_sleepCycle"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp" />
         <View
             android:id="@+id/separator_1"
             android:layout_width="match_parent"
@@ -58,18 +62,20 @@
             android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@+id/textView_sleepCycle"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="16dp"/>
+            android:layout_marginTop="16dp"/>
 
         <TextView
             android:id="@+id/textView_minutesFallingAsleep"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="@string/minutesFallingAsleep"
+            android:text="@string/minutes_falling_asleep"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintTop_toBottomOf="@+id/separator_1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/spinner_minutesOfFallingAsleep"/>
+            app:layout_constraintEnd_toStartOf="@id/spinner_minutesOfFallingAsleep"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"/>
 
         <Spinner
             android:id="@+id/spinner_minutesOfFallingAsleep"
@@ -78,7 +84,8 @@
             app:layout_constraintTop_toTopOf="@+id/textView_minutesFallingAsleep"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textView_minutesFallingAsleep"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp" />
 
         <View
             android:id="@+id/separator_2"
@@ -87,7 +94,7 @@
             android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@+id/textView_minutesFallingAsleep"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="16dp"/>
+            android:layout_marginTop="16dp"/>
 
         <TextView
             android:id="@+id/songNameChosen_textView"
@@ -99,45 +106,51 @@
             app:layout_constraintBottom_toBottomOf="@+id/browse"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/browse"
-            android:layout_margin="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp" />
+
         <Button
             android:id="@+id/browse"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:text="@string/browse"
             android:textAllCaps="false"
             android:textStyle="italic"
-            android:background="@drawable/custom_button_selector"
+            android:textAlignment="center"
+            android:background="@drawable/custom_button_ripple"
             app:layout_constraintTop_toBottomOf="@+id/separator_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/songNameChosen_textView"
-            android:layout_margin="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"/>
 
         <View
             android:id="@+id/separator_3"
             android:layout_width="match_parent"
-            android:layout_height="0.1dp"
+            android:layout_height="0.5dp"
             android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@+id/browse"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="16dp"/>
+            android:layout_marginTop="16dp"/>
 
         <Button
             android:id="@+id/cancel_alarm_set_up_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancelCreatingAlarm"
-            android:layout_marginTop="8dp"
+            android:text="@string/cancel"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintTop_toBottomOf="@+id/separator_3"
             app:layout_constraintStart_toStartOf="@+id/separator_3"
             app:layout_constraintEnd_toStartOf="@+id/create_alarm_wake_up_time"
             android:layout_marginEnd="20dp"/>
+
         <Button
             android:id="@+id/create_alarm_wake_up_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintTop_toBottomOf="@+id/separator_3"
             app:layout_constraintStart_toEndOf="@id/cancel_alarm_set_up_time"

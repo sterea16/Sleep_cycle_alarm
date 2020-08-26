@@ -14,9 +14,9 @@ public class ScreenStateReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         context.getApplicationContext().unregisterReceiver(this);
 
-        if (AlarmNotification.ringtone != null) {
-            AlarmNotification.stopRingtone();
-            AlarmNotification.finishAlarmActivity();
+        if (Alarm.Notification.ringtone != null) {
+            Alarm.Notification.stopRingtone();
+            Alarm.Notification.finishAlarmActivity();
 
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
                 NotificationManager notificationManager = context.getSystemService(NotificationManager.class);

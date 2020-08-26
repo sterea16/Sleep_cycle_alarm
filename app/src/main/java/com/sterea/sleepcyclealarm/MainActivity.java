@@ -2,10 +2,10 @@ package com.sterea.sleepcyclealarm;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -16,48 +16,38 @@ import android.os.Bundle;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.Objects;
-
 public class MainActivity extends AppCompatActivity {
     /*TODO Create a Preference hierarchy (a.k.a settings fragment) for notifications and sleep cycle value
     *  https://developer.android.com/guide/topics/ui/settings
     * TODO Swipe to refresh https://developer.android.com/training/swipe*/
-
-    /**
-     * The number of pages (wizard steps) to show in this demo.
-     */
     private static final int NUM_PAGES = 3;
-
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
     private ViewPager2 viewPager;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);//removes the title of the toolbar (this is the main activity and its label it's required in order to give a name to the app launcher)
+        /*Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);*/
+        /*Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);//removes the title of the toolbar (this is the main activity and its label it's required in order to give a name to the app launcher)*/
 
         // Create and register notifications channels.
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
-            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.ALARM_CHANNEL_ID,
+            Alarm.Notification.ChannelBuilder.createNotificationChannel(this, Alarm.Notification.ChannelBuilder.ALARM_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_alarm),
                     getResources().getString(R.string.channel_description_alarm), NotificationManager.IMPORTANCE_HIGH);
 
-            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.REMINDER_CHANNEL_ID,
+            Alarm.Notification.ChannelBuilder.createNotificationChannel(this, Alarm.Notification.ChannelBuilder.REMINDER_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_reminder), getResources().getString(R.string.channel_description_reminder),
                     NotificationManagerCompat.IMPORTANCE_DEFAULT);
 
-            AlarmNotification.ChannelBuilder.createNotificationChannel(this, AlarmNotification.ChannelBuilder.SNOOZE_CHANNEL_ID,
+            Alarm.Notification.ChannelBuilder.createNotificationChannel(this, Alarm.Notification.ChannelBuilder.SNOOZE_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_snooze), getResources().getString(R.string.channel_description_snooze),
                     NotificationManagerCompat.IMPORTANCE_LOW);
         }
 
-        /**
+        /*
          * The pager adapter, which provides the pages to the view pager widget.
          */
         FragmentStateAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
@@ -68,7 +58,21 @@ public class MainActivity extends AppCompatActivity {
                 new TabLayoutMediator.TabConfigurationStrategy() {
                     @Override
                     public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                        //nothing to do here
+                        //setting up the tabs
+                        switch(position){
+                            case 0:
+                                tab.setText("bed time");
+                                tab.setIcon(getResources().getDrawable(R.drawable.ic_bed_svgrepo_com));
+                                break;
+                            case 1:
+                                tab.setText("waking time");
+                                tab.setIcon(getResources().getDrawable(R.drawable.ic_wake_up_time));
+                                break;
+                            case 2:
+                                tab.setText("nap time");
+                                tab.setIcon(getResources().getDrawable(R.drawable.ic_008_pillow));
+                                break;
+                        }
                     }
                 });
         tabLayoutMediator.attach();
@@ -97,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position){
                 case 0:
-                    return new KnownWakeUpTimeFragment();
+                    return new WakeUpTimeFragment();
                 case 1:
-                    return new KnownBedTimeFragment();
+                    return new BedTimeFragment();
                 case 2:
                     return new NapTimeFragment();
             }

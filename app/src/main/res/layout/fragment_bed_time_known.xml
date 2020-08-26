@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/knownBedTime_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:text="@string/knownBedTimeText"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/constraint_configuration_layout"/>
+
+        <Button
+            android:id="@+id/set_up_button"
+            android:layout_width="165dp"
+            android:layout_height="137dp"
+            android:background="@drawable/waking_ripple"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/knownBedTime_textView" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_configuration_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/knownBedTime_textView"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/alarm_status_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/horizontal_separator_0"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/alarm_status_text_view" />
+
+            <!--setting it checked true by default is very important for the listener-->
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/bedTime_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/alarm_status_text_view"
+                app:layout_constraintEnd_toEndOf="@+id/ringtone_change_text_view"
+                app:layout_constraintStart_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintTop_toTopOf="@+id/alarm_status_text_view"
+                app:track="@drawable/switch_track"
+                android:checked="true"
+                android:thumb="@drawable/switch_thumb"/>
+
+            <TextView
+                android:id="@+id/total_sleeping_time_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="6dp"
+                android:text="@string/total_sleeping_time"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintBottom_toBottomOf="@+id/total_sleeping_time_value_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/total_sleeping_time_value_text_view" />
+
+            <TextView
+                android:id="@+id/total_sleeping_time_value_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_0" />
+
+            <View
+                android:id="@+id/horizontal_separator_1"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/total_sleeping_time_value_text_view" />
+
+            <TextView
+                android:id="@+id/bed_time_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/bed_time"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintBottom_toBottomOf="@+id/bed_time_value_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/bed_time_value_text_view" />
+
+            <TextView
+                android:id="@+id/bed_time_value_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_1" />
+
+            <View
+                android:id="@+id/horizontal_separator_2"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bed_time_value_text_view" />
+
+            <TextView
+                android:id="@+id/sleep_cycles_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/sleep_cycles"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintBottom_toBottomOf="@+id/sleep_cycles_value_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/sleep_cycles_value_text_view" />
+
+            <TextView
+                android:id="@+id/sleep_cycles_value_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_2" />
+
+            <View
+                android:id="@+id/horizontal_separator_3"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sleep_cycles_value_text_view" />
+
+            <TextView
+                android:id="@+id/minutes_falling_asleep_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/minutes_falling_asleep"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintBottom_toBottomOf="@+id/minutes_falling_asleep_value_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/minutes_falling_asleep_value_text_view" />
+
+            <TextView
+                android:id="@+id/minutes_falling_asleep_value_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_3" />
+
+            <View
+                android:id="@+id/horizontal_separator_4"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/minutes_falling_asleep_value_text_view" />
+
+            <TextView
+                android:id="@+id/ringtone_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="6dp"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/ringtone_change_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_4" />
+
+            <TextView
+                android:id="@+id/ringtone_change_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/change"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:background="?attr/selectableItemBackground"
+                app:layout_constraintBottom_toBottomOf="@+id/ringtone_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ringtone_text_view" />
+
+            <View
+                android:id="@+id/horizontal_separator_5"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ringtone_text_view" />
+
+            <Button
+                android:id="@+id/remove_bed_time_button"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/custom_button_ripple"
+                android:text="@string/remove"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/horizontal_separator_5" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

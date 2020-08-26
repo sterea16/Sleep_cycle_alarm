@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -25,17 +24,26 @@ import java.util.Calendar;
 public class AlarmActivity extends AppCompatActivity {
     private int alarmType;
     private boolean fromSnoozeNotification;
+    private Configurator configurator;
 
+    private void prepare(int alarmType){
+        if(alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE){
+            configurator = Configurator.wakeUpTimeKnownConf;
+        } else if (alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
+            configurator = Configurator.bedTimeKnownConf;
+        }
+    }
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm_layout);
         //get an instance of this activity so it ca be destroyed from notification
-        AlarmNotification.setAlarmActivityInstance(this);
+        Alarm.Notification.setAlarmActivityInstance(this);
 
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         alarmType = bundle.getInt(Alarm.REQUEST_CODE_KEY);
+        prepare(alarmType);
         fromSnoozeNotification = bundle.getBoolean(Alarm.IS_SNOOZED);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -71,23 +79,23 @@ public class AlarmActivity extends AppCompatActivity {
         dismissButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Configurator.knownWakeUpTimeConf.setAlarmState(false);
-                Configurator.knownWakeUpTimeConf.setConfChanged(true);
+                configurator.setAlarmState(false)
+                            .setConfChanged(true);
                 SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
                 SharedPreferences.Editor editor = savedPreferences.edit();
-                editor.putBoolean(Configurator.IS_KNOWN_WAKE_UP_ALARM_STATE, false);
-                editor.putBoolean(Configurator.SNOOZE_STATE_KNOWN_WAKE_UP, false);
+                editor.putBoolean(configurator.getAlarmStateKey(), false);
+                editor.putBoolean(configurator.getSnoozeStateKey(), false);
                 editor.apply();
 
                 Log.d("dismissListener", "Macin " + alarmType);
-                int hour = savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0);
-                int minutes = savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0);
-                Configurator.knownWakeUpTimeConf.setWakeUpTime(hour, minutes);
-                Alarm alarm = new Alarm(Configurator.knownWakeUpTimeConf.getWakeUpTime(), AlarmActivity.this, alarmType);
+                int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0);
+                int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0);
+                Configurator.wakeUpTimeKnownConf.buildAlarmTime(hour, minutes);
+                Alarm alarm = new Alarm(Configurator.wakeUpTimeKnownConf.getAlarmTime(), AlarmActivity.this, alarmType);
                 alarm.cancelAlarm();
 
                 cancelNotifications(alarmType);
-                AlarmNotification.stopRingtone();
+                Alarm.Notification.stopRingtone();
                 finishAndRemoveTask();
             }
         });
@@ -109,7 +117,7 @@ public class AlarmActivity extends AppCompatActivity {
                     Calendar snoozeTime = Calendar.getInstance();
                     Alarm alarm = new Alarm(snoozeTime, AlarmActivity.this, alarmType);
                     alarm.snoozeAlarm();
-                    AlarmNotification.stopRingtone();
+                    Alarm.Notification.stopRingtone();
 
                     finishAndRemoveTask();
                     finish();
@@ -124,7 +132,7 @@ public class AlarmActivity extends AppCompatActivity {
         super.onStop();
         if(fromSnoozeNotification){
             finishAndRemoveTask();
-            AlarmNotification snoozeNotification = new AlarmNotification(this, AlarmNotification.SNOOZE, alarmType);
+            Alarm.Notification snoozeNotification = new Alarm.Notification(this, Alarm.Notification.SNOOZE, alarmType);
             snoozeNotification.startNotify();
         }
     }

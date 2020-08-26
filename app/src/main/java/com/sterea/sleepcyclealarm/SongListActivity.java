@@ -2,14 +2,14 @@ package com.sterea.sleepcyclealarm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class SongListActivity extends AppCompatActivity {
     private boolean isPaused;
@@ -17,6 +17,17 @@ public class SongListActivity extends AppCompatActivity {
     private String rawFileSongName;
     private int radioCheckedId;
     private String songName;
+    private Configurator configurator;
+
+    static final String CHECK_ALARM_TYPE = SongListActivity.class.getSimpleName();
+
+    private void prepareConfiguration(int alarmType){
+        if (alarmType == 1){
+            configurator = Configurator.wakeUpTimeKnownConf;
+        } else if(alarmType == 2){
+            configurator = Configurator.bedTimeKnownConf;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +36,27 @@ public class SongListActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_song_list_layout);
 
+        int alarmType = getIntent().getExtras().getInt(CHECK_ALARM_TYPE);
+        prepareConfiguration(alarmType);
+
+        SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        boolean isConfigured = savedPreferences.getBoolean(configurator.getIsConfiguredKey(), false);
+
         RadioGroup radioGroup = findViewById(R.id.group_radio_songs);
 
-        if(Configurator.knownWakeUpTimeConf.getSongIndexPosition() != 0 ){
-            RadioButton radioButton = findViewById(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
-            radioButton.setChecked(true);
-            getSong(Configurator.knownWakeUpTimeConf.getSongIndexPosition());
+        if(isConfigured) {
+            configurator.setRingtoneIndexPosition(savedPreferences.getInt(configurator.getRingtoneIndexPositionKey(), 0));
+            Log.d("Macin", "Index song position key " + configurator.getRingtoneIndexPositionKey() +
+                    "\n" + "Index song position " + configurator.getRingtoneIndexPosition());
+            RadioButton radioButton = findViewById(configurator.getRingtoneIndexPosition());
+            if(radioButton != null) {
+                radioButton.setChecked(true);
+                getSong(configurator.getRingtoneIndexPosition());
+            }
         } else {
             getSong(radioGroup.getCheckedRadioButtonId());
         }
+
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -47,9 +70,8 @@ public class SongListActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton confirmFAB = findViewById(R.id.confirm_song);
-        confirmFAB.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        confirmFAB.setOnClickListener(new View.OnClickListener() {
+        View confirmButton = findViewById(R.id.confirm_song);
+        confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mediaPlayer != null) {
@@ -57,9 +79,16 @@ public class SongListActivity extends AppCompatActivity {
                     mediaPlayer.release();
                     mediaPlayer = null;
                 }
-                Configurator.knownWakeUpTimeConf.setRawFileSongName(rawFileSongName);
-                Configurator.knownWakeUpTimeConf.setSongIndexPosition(radioCheckedId);
-                Configurator.knownWakeUpTimeConf.setRingtoneName(songName);
+                configurator.setRawFileSongName(rawFileSongName)
+                            .setRingtoneIndexPosition(radioCheckedId)
+                            .setRingtoneName(songName);
+
+                SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+                SharedPreferences.Editor editor = savedConfiguration.edit();
+                editor.putInt(configurator.getRingtoneIndexPositionKey(), configurator.getRingtoneIndexPosition())
+                        .putString(configurator.getRawFileSongNameKey(), configurator.getRawFileSongName())
+                        .putString(configurator.getRingtoneNameKey(), configurator.getRingtoneName());
+                editor.apply();
                 finish();
             }
         });

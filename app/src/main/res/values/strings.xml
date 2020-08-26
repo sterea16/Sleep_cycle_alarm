@@ -10,6 +10,18 @@
     <string name="alarmOff">Alarm OFF</string>
     <string name="alarmDismissed">Alarm dismissed</string>
     <string name="tips"><i>Tap to change, hold to reset to default.</i></string>
+    <string name="waking_time">Waking time</string>
+    <string name="bed_time"> Bed time</string>
+    <string name="sleep_cycles">Sleep cycles</string>
+    <string name="minutes_falling_asleep">Minutes falling asleep </string>
+    <string name="ringtone">Ringtone</string>
+    <string name="change">Change</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove">Remove</string>
+    <string name="get_waking_time">GET  WAKING  TIME</string>
+    <string name="choose_waking_time">Choose waking time</string>
+    <string name="choose_bed_time">Choose bed time</string>
+    <string name="total_sleeping_time">Total sleeping time</string>
 
     <!--AlarmActivity-->
     <string name="dismiss">Dismiss</string>
@@ -29,12 +41,13 @@
     <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
     <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
     <string name="napTimeText">Taking a nap.</string>
-    <string name="deleteDialog">Reset alarm configuration?</string>
-    <string name="positiveDialog">Reset</string>
+    <string name="removeDialog">Remove this alarm configuration?</string>
+    <string name="positiveDialog">Remove</string>
     <string name="negativeDialog">Cancel</string>
 
-    <!--Known bed time card view strings-->
+    <!--Known bed time page strings-->
     <string name="knownBedTimeText">Bed time now?\nCalculate <i>wake up time</i>.</string>
+    <string name="calcWakingTime">Calculated waking time: </string>
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
@@ -42,12 +55,9 @@
     <string name="wakingUpTime">Waking up time set for:</string>
     <string name="chooseARingtone">Choose a ringtone</string>
     <string name="selectedRingtone">Selected ringtone</string>
-    <string name="sleepCycles">Number of sleep cycles: </string>
-    <string name="minutesFallingAsleep">Minutes for falling asleep: </string>
+    <string name="sleepCycles">Number of sleep cycles </string>
     <string name="browse">browse</string>
     <string name="createAlarm">Create</string>
-    <string name="changeAlarm">Change</string>
-    <string name="cancelCreatingAlarm">Cancel</string>
 
     <!--Alert dialog getting started
     //TODO Tips messages to be updated-->
@@ -79,6 +89,5 @@
 
     <string name="notification_title_snooze">Alarm snoozed</string>
     <string name="notification_content_snooze">Alarm is snoozed for 5 minutes.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

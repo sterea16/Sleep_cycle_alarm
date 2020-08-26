@@ -20,13 +20,26 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class SetUpAlarmActivity extends AppCompatActivity {
     private int cyclesValue = 7;
     private int cyclesPosition_spinner = 6;
     private int asleepMinutesValue = 14;
     private int asleepMinutesPosition_spinner = 9;
-    private final String TAG = SetUpAlarmActivity.class.getSimpleName();
+    private int alarmType;
+    private Configurator configurator;
+
+    static final String CHECK_ALARM_TYPE= SetUpAlarmActivity.class.getSimpleName();
+
+    private void setConfigurator(int alarmType){
+        if (alarmType == 1){
+            configurator = Configurator.wakeUpTimeKnownConf;
+        } else if(alarmType == 2){
+            configurator = Configurator.bedTimeKnownConf;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -35,6 +48,8 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_set_up_alarm_layout);
         getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        alarmType = getIntent().getExtras().getInt(CHECK_ALARM_TYPE);
+        setConfigurator(alarmType);
         /*create arrays to populate the spinners*/
         ArrayList<Integer> sleepCyclesArray = new ArrayList<>();
         for(int i = 1; i <=9 ; i++){
@@ -47,7 +62,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                 i+=4;
         }
 
-        /*setting up the spinners and the adaptors*/
+        /*setting up the adaptors and the spinners */
         Spinner sleepCyclesSpinner = findViewById(R.id.spinner_numberSleepCycles);
         ArrayAdapter<Integer> sleepCyclesAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, sleepCyclesArray);
         sleepCyclesSpinner.setAdapter(sleepCyclesAdapter);
@@ -63,19 +78,9 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(SetUpAlarmActivity.this, SongListActivity.class);
+                i.putExtra(SongListActivity.CHECK_ALARM_TYPE, alarmType);
                 startActivity(i);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            }
-        });
-
-        Button cancel = findViewById(R.id.cancel_alarm_set_up_time);
-        cancel.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(Configurator.knownWakeUpTimeConf.getRingtoneName() != null)
-                    Configurator.knownWakeUpTimeConf.setRingtoneName(null);
-                Configurator.knownWakeUpTimeConf.setConfChanged(false);
-                finish();
             }
         });
 
@@ -86,6 +91,9 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             timePicker.setIs24HourView(false);
         }
 
+        if(alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE)
+            timePicker.setVisibility(View.GONE);
+
         /*Saving the user alarm configuration by storing the data in a SharedPreferences object*/
         //TODO on first time use this button is CHANGE instead of CREATE so need to be fixed
         Button create = findViewById(R.id.create_alarm_wake_up_time);
@@ -93,50 +101,83 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO create warnings for few sleep cycles during night time
-                if(Build.VERSION.SDK_INT < 23){
-                    Configurator.knownWakeUpTimeConf.setHour(timePicker.getCurrentHour());
-                    Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getCurrentMinute());
-                } else {
-                    Configurator.knownWakeUpTimeConf.setHour(timePicker.getHour());
-                    Configurator.knownWakeUpTimeConf.setMinutes(timePicker.getMinute());
+                //take the time from time picker
+                if(alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                        configurator.setAlarmHour(timePicker.getCurrentHour())
+                                    .setAlarmMinutes(timePicker.getCurrentMinute());
+                    } else {
+                        configurator.setAlarmHour(timePicker.getHour())
+                                    .setAlarmMinutes(timePicker.getMinute());
+                    }
+
+                    configurator.buildAlarmTime(configurator.getAlarmHour(), Configurator.wakeUpTimeKnownConf.getAlarmMinutes())
+                                .calcBedTime(configurator.getAlarmTime(), cyclesValue, asleepMinutesValue)
+                                .setBedHour(configurator.getBedTime().get(Calendar.HOUR_OF_DAY))
+                                .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE));
+
+                } else if (alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
+                    Calendar currentTime = Calendar.getInstance();
+                    configurator.setBedTime(currentTime)
+                                .setBedHour(configurator.getBedTime().get(Calendar.HOUR_OF_DAY))
+                                .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE));
+
+                    configurator.calcAlarmTime(configurator.getBedTime(), cyclesValue, asleepMinutesValue)
+                                .setAlarmHour(configurator.getAlarmTime().get(Calendar.HOUR_OF_DAY))
+                                .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE));
                 }
 
-                SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+                SharedPreferences savedConfiguration = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
 
-                Configurator.knownWakeUpTimeConf.setSleepCycles(cyclesValue);
-                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerCycles(cyclesPosition_spinner);
-                Configurator.knownWakeUpTimeConf.setMinutesFallingAsleep(asleepMinutesValue);
-                Configurator.knownWakeUpTimeConf.setItemPositionSpinnerMinutesAsleep(asleepMinutesPosition_spinner);
-                Configurator.knownWakeUpTimeConf.setWakeUpTime(Configurator.knownWakeUpTimeConf.getHour(), Configurator.knownWakeUpTimeConf.getMinutes());
-                Configurator.knownWakeUpTimeConf.setBedTime(Configurator.knownWakeUpTimeConf.getWakeUpTime(), cyclesValue, asleepMinutesValue);
-                Configurator.knownWakeUpTimeConf.setConfChanged(true);
-                Configurator.knownWakeUpTimeConf.setConfigured(true);
-                Configurator.knownWakeUpTimeConf.setAlarmState(true);
+                configurator.setSleepCycles(cyclesValue)
+                            .setItemPositionSpinnerCycles(cyclesPosition_spinner)
+                            .setMinutesFallingAsleep(asleepMinutesValue)
+                            .setItemPositionSpinnerMinutesAsleep(asleepMinutesPosition_spinner)
+                            .setConfChanged(true)
+                            .setConfigured(true)
+                            .setAlarmState(true)
+                            .updateSavedConfiguration(savedConfiguration, configurator.getRequestCode());
 
-                Configurator.knownWakeUpTimeConf.updateSharedConfiguration(savedPreferences);
+                Alarm alarm = new Alarm(configurator.getAlarmTime(), SetUpAlarmActivity.this, configurator.getRequestCode());
+                alarm.registerAlarm();
                 finish();
             }
         });
 
-        SharedPreferences savedPreferences = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        boolean isConfigured = savedPreferences.getBoolean(Configurator.IS_KNOWN_WAKE_UP_CONFIGURED, false);
+        Button cancel = findViewById(R.id.cancel_alarm_set_up_time);
+        cancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(configurator.getRingtoneName() != null)
+                    configurator.setRingtoneName(null);
+                configurator.setConfChanged(false);
+                finish();
+            }
+        });
+
+        SharedPreferences savedConfiguration = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        boolean isConfigured = savedConfiguration.getBoolean(configurator.getIsConfiguredKey(), false);
         TextView title = findViewById(R.id.WakeUpTimeInfo_textView);
+        title.setVisibility(View.GONE);
 
         if (isConfigured) {
-            title.setText(getResources().getString(R.string.wakingUpTime));
-            create.setText(getResources().getString(R.string.changeAlarm));
-            sleepCyclesSpinner.setSelection(savedPreferences.getInt(Configurator.CYCLES_POSITION_SPINNER, 0));
-            minutesAsleepSpinner.setSelection(savedPreferences.getInt(Configurator.ASLEEP_POSITION_SPINNER, 0));
+            create.setText(getResources().getString(R.string.change));
+            sleepCyclesSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerCyclesKey(), 0));
+            minutesAsleepSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerMinutesAsleepKey(), 0));
 
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
-                timePicker.setCurrentHour(savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0));
-                timePicker.setCurrentMinute(savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0));
-            } else {
-                timePicker.setHour(savedPreferences.getInt(Configurator.HOUR_KNOWN_WAKE_UP, 0));
-                timePicker.setMinute(savedPreferences.getInt(Configurator.MINUTES_KNOWN_WAKE_UP, 0));
+            if(alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE) {
+                title.setVisibility(View.VISIBLE);
+                title.setText(getResources().getString(R.string.wakingUpTime));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    timePicker.setCurrentHour(savedConfiguration.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0));
+                    timePicker.setCurrentMinute(savedConfiguration.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0));
+                } else {
+                    timePicker.setHour(savedConfiguration.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP, 0));
+                    timePicker.setMinute(savedConfiguration.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP, 0));
+                }
             }
-            if(Configurator.knownWakeUpTimeConf.getRingtoneName() == null)
-                Configurator.knownWakeUpTimeConf.setRingtoneName(savedPreferences.getString(Configurator.SONG_NAME_KNOWN_WAKE_UP, getResources().getString(R.string.noRingtoneSelected)));
+            if(configurator.getRingtoneName() == null)
+                configurator.setRingtoneName(savedConfiguration.getString(configurator.getRingtoneNameKey(), getResources().getString(R.string.noRingtoneSelected)));
 
             updateSongView();
             return;
@@ -149,7 +190,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         updateSongView();
 
         // checking for the first time usage of the app
-        final boolean firstUse = savedPreferences.getBoolean(Configurator.FIRST_TIME_SET_UP,true);
+        final boolean firstUse = savedConfiguration.getBoolean(Configurator.FIRST_TIME_SET_UP,true);
         if(firstUse){
             showTips();
         }
@@ -158,8 +199,8 @@ public class SetUpAlarmActivity extends AppCompatActivity {
 
     private void updateSongView(){
         TextView chosenSongName = findViewById(R.id.songNameChosen_textView);
-        if(Configurator.knownWakeUpTimeConf.getRingtoneName() != null) {
-            chosenSongName.setText(Configurator.knownWakeUpTimeConf.getRingtoneName());
+        if(configurator.getRingtoneName() != null) {
+            chosenSongName.setText(configurator.getRingtoneName());
         } else {
             chosenSongName.setText(R.string.noRingtoneSelected);
         }
@@ -168,10 +209,10 @@ public class SetUpAlarmActivity extends AppCompatActivity {
     private void setUpSpinners(final Spinner spinner, final ArrayList<Integer> listValues, final int spinnerId){
         switch (spinnerId){
             case R.id.spinner_numberSleepCycles:
-                spinner.setSelection(Configurator.knownWakeUpTimeConf.getItemPositionSpinnerCycles());
+                spinner.setSelection(configurator.getItemPositionSpinnerCycles());
                 break;
             case R.id.spinner_minutesOfFallingAsleep:
-                spinner.setSelection(Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
+                spinner.setSelection(configurator.getItemPositionSpinnerMinutesAsleep());
                 break;
         }
 
@@ -200,10 +241,10 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 switch (spinnerId){
                     case R.id.spinner_numberSleepCycles:
-                        spinner.setSelection(Configurator.knownWakeUpTimeConf.getItemPositionSpinnerCycles());
+                        spinner.setSelection(configurator.getItemPositionSpinnerCycles());
                         break;
                     case R.id.spinner_minutesOfFallingAsleep:
-                        spinner.setSelection(Configurator.knownWakeUpTimeConf.getItemPositionSpinnerMinutesAsleep());
+                        spinner.setSelection(configurator.getItemPositionSpinnerMinutesAsleep());
                         break;
                 }
             }
@@ -222,8 +263,8 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                     }
                 });
         tips.show();
-        SharedPreferences sharedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        SharedPreferences.Editor editor = savedConfiguration.edit();
         editor.putBoolean(Configurator.FIRST_TIME_SET_UP, false);
         editor.apply();
     }
