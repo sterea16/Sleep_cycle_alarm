@@ -161,7 +161,6 @@ public class BedTimeFragment extends Fragment {
         theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
         TypedArray arr = getActivity().obtainStyledAttributes(typedValue.data, new int[]{
                 android.R.attr.textColorPrimary});
-        arr.recycle();
         return arr.getColor(0, -1);
     }
 
