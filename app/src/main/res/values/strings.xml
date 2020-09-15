@@ -30,17 +30,13 @@
     <string name="cancel_alarm">Cancel alarm</string>
 
     <!--Known waking up time strings card view strings-->
-    <string name="bed_time_text_1">Alarm set for</string>
-    <string name="bed_time_text_2">Bed time:</string>
-    <string name="bed_time_text_3"> Sleep cycles:</string>
+    <string name="calculated_bed_time">Calculated bed time:</string>
     <string name="minutes">minutes</string>
     <string name="minute">minute</string>
     <string name="hour">hour</string>
     <string name="hours">hours</string>
-    <string name="knownWakeUpTime_alarm_off_text_1">Waking up hour: </string>
-    <string name="knownWakeUpTime_alarm_off_text_2">Bed time: </string>
     <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
-    <string name="napTimeText">Taking a nap.</string>
+    <string name="napTimeText">Take a nap</string>
     <string name="removeDialog">Remove this alarm configuration?</string>
     <string name="positiveDialog">Remove</string>
     <string name="negativeDialog">Cancel</string>
@@ -83,7 +79,7 @@
     <string name="channel_name_alarm">Alarm notification</string>
     <string name="channel_description_alarm">Make alarms sound and pop out.</string>
     <string name="channel_name_reminder">Bed time reminder notification</string>
-    <string name="channel_description_reminder">Notification which reminds that bed time comes soon.</string>
+    <string name="channel_description_reminder">Notification which reminds that bed time is coming soon.</string>
     <string name="channel_name_snooze">Snooze notification</string>
     <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>
 

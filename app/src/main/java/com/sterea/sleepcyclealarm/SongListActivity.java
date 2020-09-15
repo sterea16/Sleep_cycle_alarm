@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
@@ -18,13 +17,12 @@ public class SongListActivity extends AppCompatActivity {
     private int radioCheckedId;
     private String songName;
     private Configurator configurator;
-
     static final String CHECK_ALARM_TYPE = SongListActivity.class.getSimpleName();
 
     private void prepareConfiguration(int alarmType){
-        if (alarmType == 1){
+        if (alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE){
             configurator = Configurator.wakeUpTimeKnownConf;
-        } else if(alarmType == 2){
+        } else if(alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
             configurator = Configurator.bedTimeKnownConf;
         }
     }
@@ -46,8 +44,6 @@ public class SongListActivity extends AppCompatActivity {
 
         if(isConfigured) {
             configurator.setRingtoneIndexPosition(savedPreferences.getInt(configurator.getRingtoneIndexPositionKey(), 0));
-            Log.d("Macin", "Index song position key " + configurator.getRingtoneIndexPositionKey() +
-                    "\n" + "Index song position " + configurator.getRingtoneIndexPosition());
             RadioButton radioButton = findViewById(configurator.getRingtoneIndexPosition());
             if(radioButton != null) {
                 radioButton.setChecked(true);
@@ -58,39 +54,33 @@ public class SongListActivity extends AppCompatActivity {
         }
 
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(mediaPlayer != null){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-                getSong(checkedId);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(mediaPlayer != null){
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
             }
+            getSong(checkedId);
         });
 
         View confirmButton = findViewById(R.id.confirm_song);
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
-                configurator.setRawFileSongName(rawFileSongName)
-                            .setRingtoneIndexPosition(radioCheckedId)
-                            .setRingtoneName(songName);
-
-                SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-                SharedPreferences.Editor editor = savedConfiguration.edit();
-                editor.putInt(configurator.getRingtoneIndexPositionKey(), configurator.getRingtoneIndexPosition())
-                        .putString(configurator.getRawFileSongNameKey(), configurator.getRawFileSongName())
-                        .putString(configurator.getRingtoneNameKey(), configurator.getRingtoneName());
-                editor.apply();
-                finish();
+        confirmButton.setOnClickListener(v -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
             }
+            configurator.setRawFileSongName(rawFileSongName)
+                        .setRingtoneIndexPosition(radioCheckedId)
+                        .setRingtoneName(songName);
+
+            SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+            SharedPreferences.Editor editor = savedConfiguration.edit();
+            editor.putInt(configurator.getRingtoneIndexPositionKey(), configurator.getRingtoneIndexPosition())
+                    .putString(configurator.getRawFileSongNameKey(), configurator.getRawFileSongName())
+                    .putString(configurator.getRingtoneNameKey(), configurator.getRingtoneName());
+            editor.apply();
+            finish();
         });
     }
 
@@ -150,14 +140,11 @@ public class SongListActivity extends AppCompatActivity {
         songName = radioButton.getText().toString();
         radioCheckedId = checkedId;
 
-        radioButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
-                } else {
-                    mediaPlayer.start();
-                }
+        radioButton.setOnClickListener(v -> {
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+            } else {
+                mediaPlayer.start();
             }
         });
     }

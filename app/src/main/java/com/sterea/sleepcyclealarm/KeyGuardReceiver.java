@@ -6,43 +6,39 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.util.Calendar;
+abstract class KeyGuardReceiver extends BroadcastReceiver {
+    private Configurator configurator;
 
-abstract class ScreenStateReceiver extends BroadcastReceiver {
-    Configurator configurator;
-
-    private ScreenStateReceiver(Configurator configurator){
-        Log.d("screen state catalin", "in constructor");
+    private KeyGuardReceiver(Configurator configurator){
         this.configurator = configurator;
     }
 
     @Override
-    public void onReceive(Context context, Intent intent){
-        //make sure that this receiver is used only once
+    public void onReceive(Context context, Intent intent) {
         context.getApplicationContext().unregisterReceiver(this);
-
         SharedPreferences savedConfiguration = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, Context.MODE_PRIVATE);
         boolean alarmState = savedConfiguration.getBoolean(configurator.getAlarmStateKey(), false);
         boolean snoozeState = savedConfiguration.getBoolean(configurator.getSnoozeStateKey(), false);
 
-        if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && alarmState && !snoozeState) {
-            Notification.stopRingtone();
+        if(intent.getAction().equals(Intent.ACTION_USER_PRESENT)){
 
             SharedPreferences.Editor editor = savedConfiguration.edit();
-            editor.putBoolean(Configurator.DEVICE_UNLOCKED, false);
+            editor.putBoolean(Configurator.DEVICE_UNLOCKED, true);
             editor.apply();
 
-            Notification.cancel(configurator.getRequestCode(), context);
-            Notification.getAlarmActivityInstance().finishAndRemoveTask();
+            if(Notification.ringtone !=null && alarmState && !snoozeState) {
+                Notification.getAlarmActivityInstance().finishAndRemoveTask();
+                Notification.cancel(configurator.getRequestCode(), context);
 
-            Calendar snoozeTime = Calendar.getInstance();
-            Alarm alarm = new Alarm(snoozeTime, context, configurator.getRequestCode());
-            alarm.snooze();
-            Log.d("Screen onReceive()", "screen state on receive true");
+                Notification alarmNotification = new Notification(context, Notification.ALARM, configurator.getRequestCode());
+                alarmNotification.trigger();
+            }
+
+            Log.d("Keyguard omReceiver()", " receive device unlocked");
         }
     }
 
-    public static class BedTime extends ScreenStateReceiver {
+    public static class BedTime extends KeyGuardReceiver {
 
         BedTime(){
             super(Configurator.bedTimeKnownConf);
@@ -54,7 +50,7 @@ abstract class ScreenStateReceiver extends BroadcastReceiver {
         }
     }
 
-    public static class WakeUp extends ScreenStateReceiver {
+    public static class WakeUp extends KeyGuardReceiver {
 
         WakeUp() {
             super(Configurator.wakeUpTimeKnownConf);
