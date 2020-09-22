@@ -18,7 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      *     {@link Notification#actionDismiss(int requestCode)}<br>
      *     {@link Notification#actionSnooze()}*/
     static final String ACTION_RECEIVED = AlarmReceiver.class.getSimpleName();
-    private String TAG = AlarmReceiver.class.getSimpleName();
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -26,7 +26,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notification notification;
         if(notificationID == Configurator.wakeUpTimeKnownConf.getRequestCode() ||
                 notificationID == Configurator.bedTimeKnownConf.getRequestCode() ||
-                notificationID == 3){
+                notificationID == Configurator.napTimeConf.getRequestCode()){
             notification = new Notification(context, Notification.ALARM, notificationID);
         } else {
             notification = new Notification(context, Notification.SNOOZE, notificationID);

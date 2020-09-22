@@ -61,4 +61,16 @@ abstract class KeyGuardReceiver extends BroadcastReceiver {
             super.onReceive(context, intent);
         }
     }
+
+    public static class NapTime extends KeyGuardReceiver {
+
+        NapTime(){
+            super(Configurator.napTimeConf);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            super.onReceive(context, intent);
+        }
+    }
 }

@@ -10,6 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.NotificationManager;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -21,14 +22,19 @@ public class MainActivity extends AppCompatActivity {
     *  https://developer.android.com/guide/topics/ui/settings
     * TODO Swipe to refresh https://developer.android.com/training/swipe*/
     private static final int NUM_PAGES = 3;
-    private ViewPager2 viewPager;
+    private ViewPager2 viewPager2;
+    static final String NAP_TIME_TAB = MainActivity.class.getName() + " NAP_TIME_TAB ";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_layout);
+        createNotificationChannels();
+        setPagesAndTabs();
+        getLastTab();
+    }
 
-        // Create and register notifications channels.
+    private void createNotificationChannels(){
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
             Notification.ChannelBuilder.createNotificationChannel(this, Notification.ChannelBuilder.ALARM_CHANNEL_ID,
                     getResources().getString(R.string.channel_name_alarm),
@@ -42,15 +48,16 @@ public class MainActivity extends AppCompatActivity {
                     getResources().getString(R.string.channel_name_snooze), getResources().getString(R.string.channel_description_snooze),
                     NotificationManagerCompat.IMPORTANCE_LOW);
         }
+    }
 
-        /*
-         * The pager adapter, which provides the pages to the view pager widget.
-         */
+    private void setPagesAndTabs(){
+        // The pager adapter, which provides the pages to the view pager widget.
         FragmentStateAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
-        viewPager = findViewById(R.id.viewPager);
-        viewPager.setAdapter(pagerAdapter);
+        viewPager2 = findViewById(R.id.viewPager2);
+        viewPager2.setAdapter(pagerAdapter);
+
         TabLayout tabLayout = findViewById(R.id.tabDots);
-        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager,
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager2,
                 (tab, position) -> {
                     //setting up the tabs
                     switch(position){
@@ -69,17 +76,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         tabLayoutMediator.attach();
+        viewPager2.setOffscreenPageLimit(1);
+    }
+
+    private void getLastTab(){
+        //TODO complete getLastTab method
     }
 
     @Override
     public void onBackPressed() {
-        if (viewPager.getCurrentItem() == 0) {
+        if (viewPager2.getCurrentItem() == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed();
         } else {
             // Otherwise, select the previous step.
-            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+            viewPager2.setCurrentItem(viewPager2.getCurrentItem() - 1);
         }
     }
 

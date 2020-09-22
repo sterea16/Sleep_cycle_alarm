@@ -33,7 +33,6 @@ final class Alarm {
     static final String IS_SNOOZED = Alarm.class.getName() + "SNOOZED";
     static final String IS_DISMISSED = Alarm.class.getName() + "DISMISSED";
     static final String IS_SWIPED = Alarm.class.getName() + "SWIPED";
-    private String TAG = Alarm.class.getSimpleName();
 
     Alarm (Calendar time, Context context, int requestCode){
         this.time = time;
@@ -66,17 +65,7 @@ final class Alarm {
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
         Log.d("Alarm cancel()","alarm canceled");
-        SharedPreferences savedPreferences = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        SharedPreferences.Editor editor = savedPreferences.edit();
-
-        if(requestCode == Configurator.wakeUpTimeKnownConf.getRequestCode()){
-            editor.putBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false)
-                    .putBoolean(Configurator.SNOOZE_STATE_WAKE_UP_KNOWN_KEY, false);
-        } else if (requestCode == Configurator.bedTimeKnownConf.getRequestCode()){
-            editor.putBoolean(Configurator.ALARM_STATE_KNOWN_BED_TIME_KEY, false)
-                    .putBoolean((Configurator.SNOOZE_STATE_KNOWN_BED_TIME_KEY), false);
-        }
-        editor.apply();
+        updateConfiguration();
         settingRebootReceiver(false);
     }
 
@@ -120,5 +109,22 @@ final class Alarm {
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP);
         }
+    }
+
+    private void updateConfiguration(){
+        SharedPreferences savedPreferences = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        SharedPreferences.Editor editor = savedPreferences.edit();
+        if(requestCode == Configurator.wakeUpTimeKnownConf.getRequestCode()){
+            editor.putBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false)
+                    .putBoolean(Configurator.SNOOZE_STATE_WAKE_UP_KNOWN_KEY, false);
+        } else if (requestCode == Configurator.bedTimeKnownConf.getRequestCode()){
+            editor.putBoolean(Configurator.ALARM_STATE_KNOWN_BED_TIME_KEY, false)
+                    .putBoolean((Configurator.SNOOZE_STATE_KNOWN_BED_TIME_KEY), false);
+        } else if (requestCode == Configurator.NAP_TIME_ALARM_REQ_CODE) {
+            editor.putBoolean(Configurator.ALARM_STATE_NAP_TIME_KEY, false)
+                    .putBoolean(Configurator.SNOOZE_STATE_NAP_TIME_KEY, false)
+                    .putBoolean(Configurator.IS_NAP_TIME_CONFIGURED_KEY, false);
+        }
+        editor.apply();
     }
 }

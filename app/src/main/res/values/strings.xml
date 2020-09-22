@@ -13,14 +13,18 @@
     <string name="waking_time">Waking time</string>
     <string name="bed_time"> Bed time</string>
     <string name="sleep_cycles">Sleep cycles</string>
+    <string name="cycles">cycles</string>
+    <string name="cycle">cycle</string>
     <string name="minutes_falling_asleep">Minutes falling asleep </string>
     <string name="ringtone">Ringtone</string>
+    <string name="confirm">Confirm</string>
     <string name="change">Change</string>
     <string name="cancel">Cancel</string>
     <string name="remove">Remove</string>
     <string name="get_waking_time">GET  WAKING  TIME</string>
     <string name="choose_waking_time">Choose waking time</string>
     <string name="choose_bed_time">Choose bed time</string>
+    <string name="choose_song">Choose a ringtone</string>
     <string name="total_sleeping_time">Total sleeping time</string>
 
     <!--AlarmActivity-->
@@ -36,7 +40,6 @@
     <string name="hour">hour</string>
     <string name="hours">hours</string>
     <string name="knownWakeUpTimeText">Know when you have to wake up?\nCalculate <i>bed time</i>.</string>
-    <string name="napTimeText">Take a nap</string>
     <string name="removeDialog">Remove this alarm configuration?</string>
     <string name="positiveDialog">Remove</string>
     <string name="negativeDialog">Cancel</string>
@@ -44,6 +47,13 @@
     <!--Known bed time page strings-->
     <string name="knownBedTimeText">Bed time now?\nCalculate <i>wake up time</i>.</string>
     <string name="calcWakingTime">Calculated waking time: </string>
+
+    <!--Nap time-->
+    <string name="nap_time_title_no_nap_set">Take a nap</string>
+    <string name="nap_time_title_nap_set">Taking a nap…</string>
+    <string name="nap_time_ends">Ends at</string>
+    <string name="nap_time_duration">Duration</string>
+    <string name="nap_time_choose_duration">Nap duration</string>
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
@@ -78,7 +88,7 @@
     <!--Alarm-->
     <string name="channel_name_alarm">Alarm notification</string>
     <string name="channel_description_alarm">Make alarms sound and pop out.</string>
-    <string name="channel_name_reminder">Bed time reminder notification</string>
+    <string name="channel_name_reminder">Bed time reminder notification and nap time reminder</string>
     <string name="channel_description_reminder">Notification which reminds that bed time is coming soon.</string>
     <string name="channel_name_snooze">Snooze notification</string>
     <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>

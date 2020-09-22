@@ -10,6 +10,8 @@ import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.Calendar;
+
 public class SongListActivity extends AppCompatActivity {
     private boolean isPaused;
     private MediaPlayer mediaPlayer = null;
@@ -20,16 +22,17 @@ public class SongListActivity extends AppCompatActivity {
     static final String CHECK_ALARM_TYPE = SongListActivity.class.getSimpleName();
 
     private void prepareConfiguration(int alarmType){
-        if (alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE){
+        if (alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE) {
             configurator = Configurator.wakeUpTimeKnownConf;
-        } else if(alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
+        } else if (alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE) {
             configurator = Configurator.bedTimeKnownConf;
+        } else if (alarmType == Configurator.NAP_TIME_ALARM_REQ_CODE) {
+            configurator= Configurator.napTimeConf;
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_song_list_layout);
@@ -73,7 +76,7 @@ public class SongListActivity extends AppCompatActivity {
             configurator.setRawFileSongName(rawFileSongName)
                         .setRingtoneIndexPosition(radioCheckedId)
                         .setRingtoneName(songName);
-
+            //save changes
             SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
             SharedPreferences.Editor editor = savedConfiguration.edit();
             editor.putInt(configurator.getRingtoneIndexPositionKey(), configurator.getRingtoneIndexPosition())
@@ -81,6 +84,26 @@ public class SongListActivity extends AppCompatActivity {
                     .putString(configurator.getRingtoneNameKey(), configurator.getRingtoneName());
             editor.apply();
             finish();
+            if(configurator == Configurator.napTimeConf && !configurator.isConfigured()){
+                Calendar currentTime = Calendar.getInstance();
+                configurator.calcAlarmTime(currentTime, configurator.getNapDuration())
+                            .setAlarmHour(configurator.getAlarmTime().get(Calendar.HOUR_OF_DAY))
+                            .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE))
+                            .setAlarmState(true)
+                            .setConfigured(true);
+
+                editor.putInt(Configurator.ALARM_HOUR_NAP_TIME_KEY, configurator.getAlarmHour())
+                        .putInt(Configurator.ALARM_MINUTES_NAP_TIME_KEY, configurator.getAlarmMinutes())
+                        .putInt(Configurator.NAP_DURATION_KEY, configurator.getNapDuration())
+                        .putBoolean(Configurator.ALARM_STATE_NAP_TIME_KEY, true)
+                        .putBoolean(Configurator.IS_NAP_TIME_CONFIGURED_KEY, true);
+                editor.apply();
+
+                Alarm napAlarm = new Alarm(configurator.getAlarmTime(), this, configurator.getRequestCode());
+                napAlarm.register();
+                Notification notification = new Notification(this, Notification.NAP, configurator.getRequestCode());
+                notification.trigger();
+            }
         });
     }
 

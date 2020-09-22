@@ -65,4 +65,16 @@ abstract class ScreenStateReceiver extends BroadcastReceiver {
             super.onReceive(context, intent);
         }
     }
+
+    public static class NapTime extends ScreenStateReceiver {
+
+        NapTime(){
+            super(Configurator.napTimeConf);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            super.onReceive(context, intent);
+        }
+    }
 }

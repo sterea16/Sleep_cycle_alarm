@@ -66,7 +66,7 @@ public abstract class CustomFragment extends Fragment {
         minutesAsleepValue = constraintLayout.findViewById(R.id.minutes_falling_asleep_value_text_view);
         ringtoneChange = constraintLayout.findViewById(R.id.ringtone_change_text_view);
         ringtoneName = constraintLayout.findViewById(R.id.ringtone_text_view);
-        removeAlarm = constraintLayout.findViewById(R.id.remove_Alarm_button);
+        removeAlarm = constraintLayout.findViewById(R.id.remove_nap_button);
         setUpTimeInputTextViewText();
         setUpListeners();
 
@@ -231,9 +231,11 @@ public abstract class CustomFragment extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume();
         SharedPreferences savedConfiguration = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         boolean isConfigured = savedConfiguration.getBoolean(configurator.getIsConfiguredKey(), false);
         updateUI(isConfigured);
+        super.onResume();
     }
+
+
 }

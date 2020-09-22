@@ -32,8 +32,8 @@ public class AlarmActivity extends AppCompatActivity {
             configurator = Configurator.wakeUpTimeKnownConf;
         } else if (alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
             configurator = Configurator.bedTimeKnownConf;
-        } else {
-            configurator = Configurator.bedTimeKnownConf;
+        } else if (alarmType == Configurator.NAP_TIME_ALARM_REQ_CODE){
+            configurator = Configurator.napTimeConf;
         }
     }
 
@@ -56,9 +56,11 @@ public class AlarmActivity extends AppCompatActivity {
     private void registerKeyGuardReceiver(){
         IntentFilter keyguardReceiver = new IntentFilter(Intent.ACTION_USER_PRESENT);
         if(configurator == Configurator.wakeUpTimeKnownConf) {
-            this.getApplicationContext().registerReceiver(new KeyGuardReceiver.WakeUp(), keyguardReceiver);
+            getApplicationContext().registerReceiver(new KeyGuardReceiver.WakeUp(), keyguardReceiver);
         } else if (configurator == Configurator.bedTimeKnownConf){
-            this.getApplicationContext().registerReceiver(new KeyGuardReceiver.BedTime(), keyguardReceiver);
+            getApplicationContext().registerReceiver(new KeyGuardReceiver.BedTime(), keyguardReceiver);
+        } else if (configurator == Configurator.napTimeConf) {
+            getApplicationContext().registerReceiver(new KeyGuardReceiver.NapTime(), keyguardReceiver);
         }
     }
 
@@ -127,12 +129,19 @@ public class AlarmActivity extends AppCompatActivity {
     private void dismiss(){
         configurator.setAlarmState(false)
                     .setConfChanged(true);
-        SharedPreferences savedPreferences = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        int hour = savedPreferences.getInt(configurator.getAlarmHourKey(), 0);
-        int minutes = savedPreferences.getInt(configurator.getAlarmMinutesKey(), 0);
+        SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        int hour = savedConfiguration.getInt(configurator.getAlarmHourKey(), 0);
+        int minutes = savedConfiguration.getInt(configurator.getAlarmMinutesKey(), 0);
         configurator.buildAlarmTime(hour, minutes);
         Alarm alarm = new Alarm(configurator.getAlarmTime(), AlarmActivity.this, configurator.getRequestCode());
         alarm.cancel();
+
+        if (configurator == Configurator.napTimeConf){
+            SharedPreferences.Editor editor = savedConfiguration.edit();
+            editor.putBoolean(configurator.getIsConfiguredKey(), false);
+            configurator.setConfigured(false);
+            editor.apply();
+        }
 
         Notification.unregisterScreenStateReceiver(this);
         Notification.cancel(configurator.getRequestCode(), this);

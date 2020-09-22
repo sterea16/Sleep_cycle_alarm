@@ -29,14 +29,16 @@ public final class Configurator {
     private String rawFileSongNameKey;
     private Calendar alarmTime;
     private Calendar bedTime;
+    private int napDuration;
+    private String napDurationKey;
     private boolean isConfigured;
     private boolean alarmState; //true for alarm on, false for alarm off
     private String alarmStateKey;
+    private boolean snoozeState;
     private String snoozeStateKey;
     private boolean confChanged; //used in onResume method of fragments to check for needed update of textViews
     private String isConfiguredKey;
 
-    private OnConfigurationChangedListener configurationChangedListener;
 
     /**Sate for the shared preferences file
     * Below are listed al the keys of the shared preferences file
@@ -61,7 +63,7 @@ public final class Configurator {
     static final String ASLEEP_INT_VALUE_KNOWN_WAKE_UP_KEY = Configurator.class.getName() + "ASLEEP_INT_VALUE_KNOWN_WAKE_UP_KEY";
     static final String CYCLES_POSITION_SPINNER_KNOWN_WAKE_UP_KEY = Configurator.class.getName() + "CYCLES_POSITION_SPINNER_KNOWN_WAKE_UP_KEY";
     static final String ASLEEP_POSITION_SPINNER_KNOWN_WAKE_UP_KEY = Configurator.class.getName() + "ASLEEP_POSITION_SPINNER_KNOWN_WAKE_UP_KEY";
-    final static int WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE = 1;
+    static final int WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE = 1;
 
     /*known bed time configuration keys*/
     static final String ALARM_STATE_KNOWN_BED_TIME_KEY = Configurator.class.getName() + "ALARM_STATE_KNOWN_BED_TIME_KEY";
@@ -79,6 +81,18 @@ public final class Configurator {
     static final String CYCLES_POSITION_SPINNER_KNOWN_BED_TIME_KEY = Configurator.class.getName() + "CYCLES_POSITION_SPINNER_KNOWN_BED_TIME_KEY";
     static final String ASLEEP_POSITION_SPINNER_KNOWN_BED_TIME_KEY = Configurator.class.getName() + "ASLEEP_POSITION_SPINNER_KNOWN_BED_TIME_KEY";
     static final int BED_TIME_KNOWN_ALARM_REQ_CODE = 2;
+
+    /*nap time configurator keys*/
+    static final String ALARM_STATE_NAP_TIME_KEY = Configurator.class.getName() + "ALARM_STATE_NAP_TIME_KEY";
+    static final String SNOOZE_STATE_NAP_TIME_KEY = Configurator.class.getName() + "SNOOZE_STATE_NAP_TIME_KEY";
+    static final String NAP_DURATION_KEY = Configurator.class.getName() + "NAP_DURATION_KEY";
+    static final String ALARM_HOUR_NAP_TIME_KEY = Configurator.class.getName() + "ALARM_HOUR_NAP_TIME_KEY";
+    static final String ALARM_MINUTES_NAP_TIME_KEY = Configurator.class.getName() + "ALARM_MINUTES_NAP_TIME_KEY";
+    static final String IS_NAP_TIME_CONFIGURED_KEY = Configurator.class.getName() + "IS_NAP_TIME_CONFIGURED_KEY";
+    static final String RAW_FILE_NAME_KNOWN_NAP_TIME_KEY = Configurator.class.getName() + "RAW_FILE_NAME_KNOWN_NAP_TIME_KEY";
+    static final String RINGTONE_NAME_KNOWN_NAP_TIME_KEY = Configurator.class.getName() + "RINGTONE_NAME_KNOWN_NAP_TIME_KEY";
+    static final String RINGTONE_INDEX_POSITION_NAP_TIME_KEY = Configurator.class.getName() + "RINGTONE_INDEX_POSITION_NAP_TIME_KEY";
+    static final int NAP_TIME_ALARM_REQ_CODE = 3;
 
     /**
      *
@@ -165,6 +179,39 @@ public final class Configurator {
         this.ringtoneIndexPositionKey = ringtoneIndexPositionKey;
     }
 
+    interface OnNapDurationChangedListener {
+        void onNapDurationChange(int duration);
+    }
+
+    OnNapDurationChangedListener napDurationChangedListener;
+
+    public OnNapDurationChangedListener getNapDurationChangedListener() {
+        return napDurationChangedListener;
+    }
+
+    public void setNapDurationChangedListener(OnNapDurationChangedListener napDurationChangedListener) {
+        this.napDurationChangedListener = napDurationChangedListener;
+    }
+
+    static final Configurator napTimeConf = new Configurator(NAP_TIME_ALARM_REQ_CODE, IS_NAP_TIME_CONFIGURED_KEY, ALARM_STATE_NAP_TIME_KEY, SNOOZE_STATE_NAP_TIME_KEY,
+                                                            NAP_DURATION_KEY, ALARM_HOUR_NAP_TIME_KEY, ALARM_MINUTES_NAP_TIME_KEY,
+                                                            RINGTONE_NAME_KNOWN_NAP_TIME_KEY, RAW_FILE_NAME_KNOWN_NAP_TIME_KEY, RINGTONE_INDEX_POSITION_NAP_TIME_KEY);
+
+    private Configurator (int requestCode, String isConfiguredKey, String alarmStateKey, String snoozeStateKey,
+                          String napDurationKey, String alarmHourKey, String alarmMinutesKey,
+                          String ringtoneNameKey, String rawFileSongNameKey, String ringtoneIndexPositionKey){
+        this.requestCode = requestCode;
+        this.isConfiguredKey = isConfiguredKey;
+        this.alarmStateKey = alarmStateKey;
+        this.snoozeStateKey = snoozeStateKey;
+        this.napDurationKey = napDurationKey;
+        this.alarmHourKey = alarmHourKey;
+        this.alarmMinutesKey = alarmMinutesKey;
+        this.ringtoneNameKey = ringtoneNameKey;
+        this.rawFileSongNameKey = rawFileSongNameKey;
+        this.ringtoneIndexPositionKey = ringtoneIndexPositionKey;
+    }
+
     public int getRequestCode() {
         return requestCode;
     }
@@ -173,13 +220,13 @@ public final class Configurator {
         return isConfiguredKey;
     }
 
-    public String getItemPositionSpinnerCyclesKey() {
+    /*public String getItemPositionSpinnerCyclesKey() {
         return itemPositionSpinnerCyclesKey;
     }
 
     public String getItemPositionSpinnerMinutesAsleepKey() {
         return itemPositionSpinnerMinutesAsleepKey;
-    }
+    }*/
 
     public String getRingtoneNameKey() {
         return ringtoneNameKey;
@@ -196,7 +243,7 @@ public final class Configurator {
                     .putInt(ASLEEP_INT_VALUE_KNOWN_WAKE_UP_KEY, wakeUpTimeKnownConf.getMinutesFallingAsleep())
                     .putInt(CYCLES_POSITION_SPINNER_KNOWN_WAKE_UP_KEY, wakeUpTimeKnownConf.getItemPositionSpinnerCycles())
                     .putInt(ASLEEP_POSITION_SPINNER_KNOWN_WAKE_UP_KEY, wakeUpTimeKnownConf.getItemPositionSpinnerMinutesAsleep())
-                    .putBoolean(IS_WAKE_UP_KNOWN_CONFIGURED_KEY, wakeUpTimeKnownConf.getConfigured())
+                    .putBoolean(IS_WAKE_UP_KNOWN_CONFIGURED_KEY, wakeUpTimeKnownConf.isConfigured())
                     .putBoolean(ALARM_STATE_WAKE_UP_KNOWN_KEY, wakeUpTimeKnownConf.getAlarmState())
                     .putString(RINGTONE_NAME_KNOWN_WAKE_UP_KEY, wakeUpTimeKnownConf.getRingtoneName())
                     .putString(RAW_FILE_NAME_KNOWN_WAKE_UP_KEY, wakeUpTimeKnownConf.getRawFileSongName())
@@ -210,24 +257,30 @@ public final class Configurator {
                     .putInt(ASLEEP_INT_VALUE_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getMinutesFallingAsleep())
                     .putInt(CYCLES_POSITION_SPINNER_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getItemPositionSpinnerCycles())
                     .putInt(ASLEEP_POSITION_SPINNER_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getItemPositionSpinnerMinutesAsleep())
-                    .putBoolean(IS_BED_TIME_KNOWN_CONFIGURED_KEY, bedTimeKnownConf.getConfigured())
+                    .putBoolean(IS_BED_TIME_KNOWN_CONFIGURED_KEY, bedTimeKnownConf.isConfigured())
                     .putBoolean(ALARM_STATE_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getAlarmState())
                     .putString(RINGTONE_NAME_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getRingtoneName())
                     .putString(RAW_FILE_NAME_KNOWN_BED_TIME_KEY, bedTimeKnownConf.getRawFileSongName())
                     .putInt(RINGTONE_INDEX_POSITION_BED_TIME_KEY, bedTimeKnownConf.getRingtoneIndexPosition());
+        } else if (alarmType == Configurator.NAP_TIME_ALARM_REQ_CODE) {
+            editor.putInt(ALARM_HOUR_NAP_TIME_KEY, napTimeConf.getAlarmHour())
+                    .putInt(ALARM_MINUTES_NAP_TIME_KEY, napTimeConf.getAlarmMinutes())
+                    .putInt(NAP_DURATION_KEY, napTimeConf.getNapDuration())
+                    .putString(RINGTONE_NAME_KNOWN_NAP_TIME_KEY, napTimeConf.getRingtoneName())
+                    .putString(RAW_FILE_NAME_KNOWN_NAP_TIME_KEY, napTimeConf.getRawFileSongName())
+                    .putInt(RINGTONE_INDEX_POSITION_NAP_TIME_KEY, napTimeConf.getRingtoneIndexPosition())
+                    .putBoolean(ALARM_STATE_NAP_TIME_KEY, napTimeConf.getAlarmState())
+                    .putBoolean(SNOOZE_STATE_NAP_TIME_KEY, napTimeConf.isSnoozeState())
+                    .putBoolean(IS_NAP_TIME_CONFIGURED_KEY, napTimeConf.isConfigured());
         }
         editor.apply();
-    }
-
-    interface OnConfigurationChangedListener{
-        void onConfigurationChanged();
     }
 
     /**
      * Used when there is already an wake up hour saved in shared preferences file,
      * so it need the hour and minutes to build it.
-     * @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+     * @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator buildAlarmTime(int hour, int minutes) {
         alarmTime = Calendar.getInstance();
         alarmTime.set(Calendar.HOUR_OF_DAY, hour);
@@ -236,8 +289,8 @@ public final class Configurator {
         return this;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator buildBedTime(int hour, int minutes){
         bedTime = Calendar.getInstance();
         bedTime.set(Calendar.HOUR_OF_DAY, hour);
@@ -247,8 +300,8 @@ public final class Configurator {
     }
 
     /**Calculates and <b>SETS</b> the alarm time.
-     * @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+     * @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator calcAlarmTime(Calendar bedTime, int cycles, int minutesFallingAsleep){
         alarmTime = (Calendar) bedTime.clone();
         /*commented only during tests*/
@@ -258,6 +311,12 @@ public final class Configurator {
         /*this line must be deleted outside tests*/
         /*alarmTime.add(Calendar.MINUTE, 1);*/
 
+        return this;
+    }
+
+    Configurator calcAlarmTime (Calendar currentTime, int duration){
+        alarmTime = currentTime;
+        alarmTime.add(Calendar.MINUTE, duration);
         return this;
     }
 
@@ -275,8 +334,8 @@ public final class Configurator {
         return this;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setBedTime(Calendar currentTime){
         currentTime.set(Calendar.SECOND, 0);
         bedTime = currentTime;
@@ -291,14 +350,14 @@ public final class Configurator {
         return snoozeStateKey;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setSleepCycles(int sleepCycles) {
         this.sleepCycles = sleepCycles;
         return this;
     }
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setMinutesFallingAsleep(int minutesFallingAsleep) {
         this.minutesFallingAsleep = minutesFallingAsleep;
         return this;
@@ -314,21 +373,21 @@ public final class Configurator {
 
 
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setAlarmHour(int alarmHour) {
         this.alarmHour = alarmHour;
         return this;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setAlarmMinutes(int alarmMinutes) {
         this.alarmMinutes = alarmMinutes;
         return this;
     }
 
-    public Boolean getConfigured() {
+    public Boolean isConfigured() {
         return isConfigured;
     }
 
@@ -354,15 +413,15 @@ public final class Configurator {
         return bedHour;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setBedHour(int bedHour) {
         this.bedHour = bedHour;
         return this;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     public String getBedHourKey() {
         return bedHourKey;
     }
@@ -375,8 +434,8 @@ public final class Configurator {
         return alarmMinutesKey;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setBedHourKey(String bedHourKey) {
         this.bedHourKey = bedHourKey;
         return this;
@@ -386,8 +445,8 @@ public final class Configurator {
         return bedMinuteKey;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setBedMinuteKey(String bedMinuteKey) {
         this.bedMinuteKey = bedMinuteKey;
         return this;
@@ -414,8 +473,8 @@ public final class Configurator {
         return itemPositionSpinnerCycles;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setItemPositionSpinnerCycles(int itemPositionSpinnerCycles) {
         this.itemPositionSpinnerCycles = itemPositionSpinnerCycles;
         return this;
@@ -425,15 +484,15 @@ public final class Configurator {
         return itemPositionSpinnerMinutesAsleep;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setItemPositionSpinnerMinutesAsleep(int itemPositionSpinnerMinutesAsleep) {
         this.itemPositionSpinnerMinutesAsleep = itemPositionSpinnerMinutesAsleep;
         return this;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setConfigured(boolean configuration) {
         isConfigured = configuration;
         return this;
@@ -443,35 +502,33 @@ public final class Configurator {
         return alarmState;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setAlarmState(boolean alarmState) {
         this.alarmState = alarmState;
         return this;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setConfChanged(boolean confChanged) {
         this.confChanged = confChanged;
-        if(configurationChangedListener != null)
-            configurationChangedListener.onConfigurationChanged();
         return this;
     }
 
-    public boolean getConfChanged() {
+    public boolean isConfChanged() {
         return confChanged;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setRawFileSongName(String rawFileSongName) {
         this.rawFileSongName = rawFileSongName;
         return this;
     }
 
-    /** @return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /** @return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setRingtoneName(String ringtoneName) {
         this.ringtoneName = ringtoneName;
         return this;
@@ -493,8 +550,8 @@ public final class Configurator {
         return ringtoneName;
     }
 
-    /**@return Returns a reference to the same Configurator object, so you can
-     * chain put calls together.*/
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
     Configurator setRingtoneIndexPosition(int ringtoneIndexPosition) {
         this.ringtoneIndexPosition = ringtoneIndexPosition;
         return  this;
@@ -502,5 +559,33 @@ public final class Configurator {
 
     public String getRawFileSongNameKey() {
         return rawFileSongNameKey;
+    }
+
+    public String getNapDurationKey() {
+        return napDurationKey;
+    }
+
+    public int getNapDuration() {
+        return napDuration;
+    }
+
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
+    public Configurator setNapDuration(int napDuration) {
+        this.napDuration = napDuration;
+        if(napDurationChangedListener != null)
+            napDurationChangedListener.onNapDurationChange(napDuration);
+        return this;
+    }
+    
+    public boolean isSnoozeState() {
+        return snoozeState;
+    }
+
+    /**@return Returns a reference to the same Configurator object, so 
+     * chain put calls together are possible.*/
+    public Configurator setSnoozeState(boolean snoozeState) {
+        this.snoozeState = snoozeState;
+        return  this;
     }
 }

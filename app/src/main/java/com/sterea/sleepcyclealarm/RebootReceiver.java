@@ -14,12 +14,12 @@ public class RebootReceiver extends BroadcastReceiver {
             SharedPreferences savedPreferences = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
             boolean wakeUpKnownAlarmState = savedPreferences.getBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false);
             boolean bedTimeKnownAlarmState = savedPreferences.getBoolean(Configurator.ALARM_STATE_KNOWN_BED_TIME_KEY, false);
+            boolean napTimeKnownAlarmState = savedPreferences.getBoolean(Configurator.ALARM_STATE_NAP_TIME_KEY, false);
 
             if (wakeUpKnownAlarmState){
                 int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP_KEY, 0);
                 int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP_KEY, 0);
                 Configurator.wakeUpTimeKnownConf.buildAlarmTime(hour, minutes);
-                // Set the alarm here.
                 Alarm alarm = new Alarm(Configurator.wakeUpTimeKnownConf.getAlarmTime(), context, Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE);
                 alarm.register();
             }
@@ -28,8 +28,15 @@ public class RebootReceiver extends BroadcastReceiver {
                 int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_KNOWN_BED_TIME_KEY, 0);
                 int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_KNOWN_BED_TIME_KEY, 0);
                 Configurator.bedTimeKnownConf.buildAlarmTime(hour, minutes);
-                // Set the alarm here.
                 Alarm alarm = new Alarm(Configurator.bedTimeKnownConf.getAlarmTime(), context, Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE);
+                alarm.register();
+            }
+
+            if (napTimeKnownAlarmState){
+                int hour = savedPreferences.getInt(Configurator.ALARM_HOUR_NAP_TIME_KEY, 0);
+                int minutes = savedPreferences.getInt(Configurator.ALARM_MINUTES_NAP_TIME_KEY, 0);
+                Configurator.napTimeConf.buildAlarmTime(hour, minutes);
+                Alarm alarm = new Alarm(Configurator.napTimeConf.getAlarmTime(), context, Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE);
                 alarm.register();
             }
         }

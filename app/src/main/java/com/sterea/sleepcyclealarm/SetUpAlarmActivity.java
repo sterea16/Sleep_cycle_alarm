@@ -30,9 +30,9 @@ public class SetUpAlarmActivity extends AppCompatActivity {
     static final String CHECK_ALARM_TYPE= SetUpAlarmActivity.class.getSimpleName();
 
     private void setConfigurator(int alarmType){
-        if (alarmType == 1){
+        if (alarmType == Configurator.wakeUpTimeKnownConf.getRequestCode()){
             configurator = Configurator.wakeUpTimeKnownConf;
-        } else if(alarmType == 2){
+        } else if(alarmType == Configurator.bedTimeKnownConf.getRequestCode()){
             configurator = Configurator.bedTimeKnownConf;
         }
     }
@@ -47,6 +47,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
 
         alarmType = getIntent().getExtras().getInt(CHECK_ALARM_TYPE);
         setConfigurator(alarmType);
+
         /*create arrays to populate the spinners*/
         ArrayList<Integer> sleepCyclesArray = new ArrayList<>();
         for(int i = 1; i <=9 ; i++){
@@ -89,7 +90,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
             timePicker.setVisibility(View.GONE);
 
         /*Saving the user alarm configuration by storing the data in a SharedPreferences object*/
-        //TODO on first time use this button is CHANGE instead of CREATE so need to be fixed
+
         Button create = findViewById(R.id.create_alarm_wake_up_time);
         create.setOnClickListener(v -> {
             //TODO create warnings for few sleep cycles during night time
@@ -145,10 +146,11 @@ public class SetUpAlarmActivity extends AppCompatActivity {
 
         SharedPreferences savedConfiguration = getApplicationContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         boolean isConfigured = savedConfiguration.getBoolean(configurator.getIsConfiguredKey(), false);
-        TextView title = findViewById(R.id.WakeUpTimeInfo_textView);
-        title.setVisibility(View.GONE);
+        TextView title = findViewById(R.id.pick_time_textView);
+        if(configurator == Configurator.bedTimeKnownConf)
+            title.setVisibility(View.GONE);
 
-        if (isConfigured) {
+        /*if (isConfigured) {
             create.setText(getResources().getString(R.string.change));
             sleepCyclesSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerCyclesKey(), 0));
             minutesAsleepSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerMinutesAsleepKey(), 0));
@@ -169,12 +171,9 @@ public class SetUpAlarmActivity extends AppCompatActivity {
 
             updateSongView();
             return;
-        }
+        }*/
 
         create.setText(getResources().getString(R.string.createAlarm));
-        title = findViewById(R.id.WakeUpTimeInfo_textView);
-        title.setText(getResources().getString(R.string.selectWakeUpTime));
-
         updateSongView();
 
         // checking for the first time usage of the app

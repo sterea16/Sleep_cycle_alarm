@@ -7,12 +7,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -23,8 +31,9 @@ import static android.content.Context.MODE_PRIVATE;
  * Inner class to create notification for the alarms
  *
  ***************************************************/
-class Notification {
+class Notification implements Configurator.OnNapDurationChangedListener{
     final static String ALARM = Notification.class.getSimpleName() + " ALARM";
+    final static String NAP = Notification.class.getSimpleName() + " NAP";
     final static String SNOOZE = Notification.class.getSimpleName() + " SNOOZE";
     final static String REMINDER = Notification.class.getSimpleName() + " REMINDER";
     final static int ALARM_CALLER = 1;
@@ -42,12 +51,15 @@ class Notification {
     private Configurator configurator;
     static  ScreenStateReceiver.BedTime bedTimeScreenStateReceiver;
     static  ScreenStateReceiver.WakeUp wakeUpScreenStateReceiver;
+    static  ScreenStateReceiver.NapTime napTimeScreenStateReceiver;
 
     private void setConfigurator(int notificationId){
         if(notificationId == Configurator.wakeUpTimeKnownConf.getRequestCode()){
             configurator = Configurator.wakeUpTimeKnownConf;
         } else if (notificationId == Configurator.bedTimeKnownConf.getRequestCode()) {
             configurator = Configurator.bedTimeKnownConf;
+        } else if (notificationId == Configurator.napTimeConf.getRequestCode()){
+            configurator = Configurator.napTimeConf;
         }
     }
 
@@ -55,6 +67,8 @@ class Notification {
         if(type.equals(ALARM)){
             channelId = ChannelBuilder.ALARM_CHANNEL_ID;
         } else if(type.equals(SNOOZE)) {
+            channelId = ChannelBuilder.SNOOZE_CHANNEL_ID;
+        } else if (type.equals(NAP)){
             channelId = ChannelBuilder.SNOOZE_CHANNEL_ID;
         } else if(type.equals(REMINDER)) {
             channelId = ChannelBuilder.REMINDER_CHANNEL_ID;
@@ -94,13 +108,32 @@ class Notification {
             notificationBuilder
                     .setSmallIcon(R.drawable.baseline_snooze_24)
                     .setContentTitle(context.getResources().getString(R.string.notification_title_snooze))
-                    .setContentInfo(context.getResources().getString(R.string.notification_content_snooze))
+                    .setContentText(context.getResources().getString(R.string.notification_content_snooze))
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setCategory(NotificationCompat.CATEGORY_STATUS)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .addAction(dismissAction)
                     .setContentIntent(pendingIntents.get(1))
                     .setAutoCancel(true);
+        } else if (type.equals(NAP)) {
+
+            String endTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(configurator.getAlarmTime().getTime());
+            Intent onTapNap = new Intent(context, MainActivity.class);
+            onTapNap.putExtra(MainActivity.NAP_TIME_TAB, true);
+            PendingIntent onTapNapPendingIntent = PendingIntent.getActivity(context, notificationId + 90, onTapNap,0);
+
+            notificationBuilder
+                    .setBadgeIconType(NotificationCompat.BADGE_ICON_LARGE)
+                    .setSmallIcon(R.drawable.ic_nap_time)
+                    .setLargeIcon(getBitmap(R.drawable.ic_nap_time))
+                    .setContentTitle("Taking a nap")
+                    .setContentText("Nap time ends at " + endTime)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setOngoing(true)
+                    .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .addAction(dismissAction)
+                    .setContentIntent(onTapNapPendingIntent);
         }
         return notificationBuilder;
     }
@@ -164,6 +197,16 @@ class Notification {
         return pendingIntents;
     }
 
+    private Bitmap getBitmap(int resId){
+        Drawable drawable = ContextCompat.getDrawable(context, resId);
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
     void trigger(){
         android.app.Notification notification = createBuilder().build();
 
@@ -177,26 +220,30 @@ class Notification {
             notificationManager.notify(notificationId, notification);
         }
 
-        if(!type.equals(SNOOZE) && ringtone == null) {
+        if(!type.equals(SNOOZE) && ringtone == null && !type.equals(NAP)) {
             playRingtone();
             registerScreenStateReceiver();
         }
     }
 
     void actionDismiss(int requestCode){
+        SharedPreferences savedConfiguration = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
+        SharedPreferences.Editor editor = savedConfiguration.edit();
         if(configurator == null){
-            if(requestCode == Configurator.wakeUpTimeKnownConf.getRequestCode()){
+            if(requestCode == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE){
                 configurator = Configurator.wakeUpTimeKnownConf;
-            } else if (requestCode == Configurator.bedTimeKnownConf.getRequestCode()){
+            } else if (requestCode == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE){
                 configurator = Configurator.bedTimeKnownConf;
+            } else if (requestCode == Configurator.NAP_TIME_ALARM_REQ_CODE) {
+                configurator = Configurator.napTimeConf;
+                configurator.setConfigured(false);
+                editor.putBoolean(configurator.getIsConfiguredKey(), false);
             }
         }
 
         configurator.setAlarmState(false)
                     .setConfChanged(true);
 
-        SharedPreferences savedConfiguration = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
-        SharedPreferences.Editor editor = savedConfiguration.edit();
         editor.putBoolean(configurator.getAlarmStateKey(), false)
                 .putBoolean(configurator.getSnoozeStateKey(), false)
                 .apply();
@@ -267,12 +314,15 @@ class Notification {
         } else if (configurator == Configurator.wakeUpTimeKnownConf) {
             wakeUpScreenStateReceiver = new ScreenStateReceiver.WakeUp();
             context.getApplicationContext().registerReceiver(wakeUpScreenStateReceiver, screenStateIntent);
+        } else if (configurator == Configurator.napTimeConf) {
+            napTimeScreenStateReceiver = new ScreenStateReceiver.NapTime();
+            context.getApplicationContext().registerReceiver(napTimeScreenStateReceiver,screenStateIntent);
         }
     }
 
     static void unregisterScreenStateReceiver(Context context){
         /*the broadcast receiver may or may not have been already registered
-        * so for this reason it needs a try clack block, otherwise the app will crash
+        * so for this reason it needs a try catch block, otherwise the app will crash
         * and the configuration may not be properly saved*/
         if(bedTimeScreenStateReceiver != null) {
             try {
@@ -283,6 +333,12 @@ class Notification {
         } else if (wakeUpScreenStateReceiver != null) {
             try {
                 context.getApplicationContext().unregisterReceiver(wakeUpScreenStateReceiver);
+            } catch (IllegalArgumentException exception) {
+                exception.printStackTrace();
+            }
+        } else if (napTimeScreenStateReceiver != null) {
+            try {
+                context.getApplicationContext().unregisterReceiver(napTimeScreenStateReceiver);
             } catch (IllegalArgumentException exception) {
                 exception.printStackTrace();
             }
@@ -301,7 +357,12 @@ class Notification {
         if(alarmActivityInstance != null)
             alarmActivityInstance.finishAndRemoveTask();
     }
-    
+
+    @Override
+    public void onNapDurationChange(int duration) {
+        //TODO implement listener behavior
+    }
+
     /*************************************************************************
      *
      * This inner class is used to set up and register notifications channels.
@@ -320,6 +381,8 @@ class Notification {
                 NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
                 channel.setDescription(channelDescription);
                 channel.enableLights(true);
+                channel.setSound(null, null);
+                channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PUBLIC);
                 if ( importance == NotificationManager.IMPORTANCE_HIGH)
                     channel.canBypassDnd();
                 // Register the channel with the system; you can't change the importance

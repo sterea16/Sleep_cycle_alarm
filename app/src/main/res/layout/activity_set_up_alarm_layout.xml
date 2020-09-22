@@ -12,11 +12,12 @@
         android:padding="8dp">
 
         <TextView
-            android:id="@+id/WakeUpTimeInfo_textView"
+            android:id="@+id/pick_time_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:layout_marginTop="12dp"
+            android:text="@string/selectWakeUpTime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -25,10 +26,10 @@
             android:id="@+id/spinner_time_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/WakeUpTimeInfo_textView"
+            android:layout_below="@+id/pick_time_textView"
             android:timePickerMode="spinner"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/WakeUpTimeInfo_textView"
+            app:layout_constraintTop_toBottomOf="@+id/pick_time_textView"
             app:layout_constraintEnd_toEndOf="parent"/>
 
 
@@ -97,17 +98,17 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
-            android:id="@+id/songNameChosen_textView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/noRingtoneSelected"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintTop_toTopOf="@+id/browse"
-            app:layout_constraintBottom_toBottomOf="@+id/browse"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/browse"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp" />
+        android:id="@+id/songNameChosen_textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/noRingtoneSelected"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_constraintTop_toTopOf="@+id/browse"
+        app:layout_constraintBottom_toBottomOf="@+id/browse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/browse"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp" />
 
         <Button
             android:id="@+id/browse"
