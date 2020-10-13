@@ -51,14 +51,14 @@ public class BedTimeFragment extends CustomFragment{
     }
 
     @Override
-    void setUpTimeInputTextViewText() {
+    void initTimeInputTextViewText() {
         TextView bedTimeTextView = getView().findViewById(R.id.time_input_text_view);
         bedTimeTextView.setText(getResources().getString(R.string.bed_time));
     }
 
     @Override
-    void setUpListeners() {
-        super.setUpListeners();
+    void initListeners() {
+        super.initListeners();
         alarmStateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 setAlarm();

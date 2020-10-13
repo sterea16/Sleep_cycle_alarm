@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -66,9 +67,9 @@ public abstract class CustomFragment extends Fragment {
         minutesAsleepValue = constraintLayout.findViewById(R.id.minutes_falling_asleep_value_text_view);
         ringtoneChange = constraintLayout.findViewById(R.id.ringtone_change_text_view);
         ringtoneName = constraintLayout.findViewById(R.id.ringtone_text_view);
-        removeAlarm = constraintLayout.findViewById(R.id.remove_nap_button);
-        setUpTimeInputTextViewText();
-        setUpListeners();
+        removeAlarm = constraintLayout.findViewById(R.id.remove_configuration_button);
+        initTimeInputTextViewText();
+        initListeners();
 
         SharedPreferences savedConfiguration = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         boolean isConfigured = savedConfiguration.getBoolean(configurator.getIsConfiguredKey(), false);
@@ -86,7 +87,7 @@ public abstract class CustomFragment extends Fragment {
             getConfiguration();
 
             //update UI based on configuration
-            boolean alarmState = configurator.getAlarmState();
+            boolean alarmState = configurator.isAlarmOn();
             if(alarmState){
                 alarmStateSwitch.setChecked(true);
                 alarmStatus.setText(getContext().getResources().getString(R.string.alarmOn));
@@ -165,7 +166,7 @@ public abstract class CustomFragment extends Fragment {
         editor.apply();
     }
 
-    abstract void setUpTimeInputTextViewText();
+    abstract void initTimeInputTextViewText();
 
     abstract String getTotalSleepingTime(int sleepCycles);
 
@@ -173,9 +174,10 @@ public abstract class CustomFragment extends Fragment {
 
     abstract String getTimeInputValueText();
 
+    @UiThread
     abstract void setButtonIcon();
 
-    void setUpListeners(){
+    void initListeners(){
         SharedPreferences savedConfiguration = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
 
         sleepCyclesValue.setOnClickListener(v -> {
@@ -219,8 +221,10 @@ public abstract class CustomFragment extends Fragment {
                                     .setItemPositionSpinnerMinutesAsleep(9)
                                     .setConfigured(false)
                                     .setAlarmState(false)
-                                    .updateSavedConfiguration(savedConfiguration, configurator.getRequestCode());
+                                    .updateSavedConfiguration(savedConfiguration);
                         updateUI(false);
+                        Notification.cancel(configurator.getRequestCode(), getContext());
+                        Notification.stopRingtone();
                     })
                     .setNegativeButton(R.string.negativeDialog, (dialog, which) -> {
                         //Nothing to do here.
@@ -236,6 +240,4 @@ public abstract class CustomFragment extends Fragment {
         updateUI(isConfigured);
         super.onResume();
     }
-
-
 }

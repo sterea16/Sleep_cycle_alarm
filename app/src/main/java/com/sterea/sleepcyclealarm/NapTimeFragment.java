@@ -6,11 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +73,7 @@ public class NapTimeFragment extends Fragment {
                     .setConfigured(isConfigured);
     }
 
+    @UiThread
     private void displayViews(boolean isConfigured){
         String title;
         if(isConfigured){
@@ -164,7 +165,7 @@ public class NapTimeFragment extends Fragment {
 
     private void setRemoveButton(boolean isVisible){
         if (removeButton == null)
-            removeButton = cs.findViewById(R.id.remove_nap_button);
+            removeButton = cs.findViewById(R.id.remove_configuration_button);
 
         if(isVisible){
             removeButton.setVisibility(View.VISIBLE);
@@ -187,8 +188,10 @@ public class NapTimeFragment extends Fragment {
                             configurator.setConfigured(false)
                                         .setAlarmState(false)
                                         .setSnoozeState(false)
-                                        .updateSavedConfiguration(savedConfiguration, configurator.getRequestCode());
+                                        .updateSavedConfiguration(savedConfiguration);
                             displayViews(false);
+                            Notification.cancel(configurator.getRequestCode(), getContext());
+                            Notification.stopRingtone();
                         })
                         .setNegativeButton(R.string.negativeDialog, (dialog, which) -> {
                             //Nothing to do here.
@@ -258,7 +261,7 @@ public class NapTimeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getConfiguration();
-        displayViews(configurator.getAlarmState());
+        displayViews(configurator.isAlarmOn());
     }
 
 }

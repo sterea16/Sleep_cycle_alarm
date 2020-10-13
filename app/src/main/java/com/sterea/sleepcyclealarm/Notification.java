@@ -8,21 +8,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -31,7 +30,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Inner class to create notification for the alarms
  *
  ***************************************************/
-class Notification implements Configurator.OnNapDurationChangedListener{
+class Notification {
     final static String ALARM = Notification.class.getSimpleName() + " ALARM";
     final static String NAP = Notification.class.getSimpleName() + " NAP";
     final static String SNOOZE = Notification.class.getSimpleName() + " SNOOZE";
@@ -41,6 +40,8 @@ class Notification implements Configurator.OnNapDurationChangedListener{
     final static int FULL_SCREEN_CALLER = 3;
     static MediaPlayer ringtone = null;
     private static AlarmActivity alarmActivityInstance = null;
+    private float volume = 0;
+    private final Timer timer = new Timer(true);
 
     /** This has the same value as {@link Configurator#getRequestCode()}.<br>
      * It's used to distinguish a notification from another in the notification service ({@link Context#NOTIFICATION_SERVICE}).*/
@@ -119,7 +120,7 @@ class Notification implements Configurator.OnNapDurationChangedListener{
 
             String endTime = DateFormat.getTimeInstance(DateFormat.SHORT).format(configurator.getAlarmTime().getTime());
             Intent onTapNap = new Intent(context, MainActivity.class);
-            onTapNap.putExtra(MainActivity.NAP_TIME_TAB, true);
+            onTapNap.putExtra(MainActivity.REQUESTED_TAB, configurator.getRequestCode());
             PendingIntent onTapNapPendingIntent = PendingIntent.getActivity(context, notificationId + 90, onTapNap,0);
 
             notificationBuilder
@@ -198,27 +199,31 @@ class Notification implements Configurator.OnNapDurationChangedListener{
     }
 
     private Bitmap getBitmap(int resId){
-        Drawable drawable = ContextCompat.getDrawable(context, resId);
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+        final Bitmap[] bitmap = new Bitmap[1];
+        Runnable runnable = () -> {
+            Drawable drawable = ContextCompat.getDrawable(context, resId);
+            bitmap[0] = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap[0]);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return bitmap[0];
     }
 
     void trigger(){
         android.app.Notification notification = createBuilder().build();
 
+        NotificationManager notificationManager;
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1){
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.cancel(notificationId);
-            notificationManager.notify(notificationId, notification);
+            notificationManager = context.getSystemService(NotificationManager.class);
         } else {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(notificationId);
-            notificationManager.notify(notificationId, notification);
+            notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
+        notificationManager.cancel(notificationId);
+        notificationManager.notify(notificationId, notification);
 
         if(!type.equals(SNOOZE) && ringtone == null && !type.equals(NAP)) {
             playRingtone();
@@ -257,6 +262,8 @@ class Notification implements Configurator.OnNapDurationChangedListener{
         unregisterScreenStateReceiver(context);
         stopRingtone();
         finishAlarmActivity();
+        timer.cancel();
+        timer.purge();
     }
 
     void actionSnooze(){
@@ -281,7 +288,45 @@ class Notification implements Configurator.OnNapDurationChangedListener{
         ringtone = MediaPlayer.create(context, songId);
         ringtone.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());
         ringtone.setLooping(true);
+        ringtone.setVolume(volume, volume);
         ringtone.start();
+        startFadeIn();
+    }
+
+    private void startFadeIn(){
+        final int FADE_DURATION = 30000; //The duration of the fade
+        //The amount of time between volume changes. The smaller this is, the smoother the fade
+        final int FADE_INTERVAL = 150;
+        final int MAX_VOLUME = 1; //The volume will increase from 0 to 1
+        int numberOfSteps = FADE_DURATION/FADE_INTERVAL; //Calculate the number of fade steps
+        //Calculate by how much the volume changes each step
+        final float deltaVolume = MAX_VOLUME / (float)numberOfSteps;
+
+        //Create a new Timer and Timer task to run the fading outside the main UI thread
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                fadeInStep(deltaVolume); //Do a fade step
+                //Cancel and Purge the Timer if the desired volume has been reached
+                if(volume>=1f){
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        };
+
+        timer.schedule(timerTask, FADE_INTERVAL, FADE_INTERVAL);
+    }
+
+    private void fadeInStep(float deltaVolume){
+        if(ringtone != null) {
+            ringtone.setVolume(volume, volume);
+            volume += deltaVolume;
+        } else {
+            timer.cancel();
+            timer.purge();
+        }
+
     }
 
     static void stopRingtone(){
@@ -316,7 +361,7 @@ class Notification implements Configurator.OnNapDurationChangedListener{
             context.getApplicationContext().registerReceiver(wakeUpScreenStateReceiver, screenStateIntent);
         } else if (configurator == Configurator.napTimeConf) {
             napTimeScreenStateReceiver = new ScreenStateReceiver.NapTime();
-            context.getApplicationContext().registerReceiver(napTimeScreenStateReceiver,screenStateIntent);
+            context.getApplicationContext().registerReceiver(napTimeScreenStateReceiver, screenStateIntent);
         }
     }
 
@@ -356,11 +401,6 @@ class Notification implements Configurator.OnNapDurationChangedListener{
     static void finishAlarmActivity(){
         if(alarmActivityInstance != null)
             alarmActivityInstance.finishAndRemoveTask();
-    }
-
-    @Override
-    public void onNapDurationChange(int duration) {
-        //TODO implement listener behavior
     }
 
     /*************************************************************************

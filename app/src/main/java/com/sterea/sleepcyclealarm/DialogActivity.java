@@ -6,11 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.transition.Transition;
-import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -45,10 +41,6 @@ public class DialogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_dialog_layout);
-        Transition exitTransition = new TransitionSet(this, getResources().getAnimation(R.anim.animator_right_to_left));
-        getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        getWindow().setAllowReturnTransitionOverlap(true);
-        getWindow().setExitTransition(exitTransition);
 
         int alarmType = getIntent().getExtras().getInt(ALARM_TYPE);
         setConfigurator(alarmType);
@@ -76,11 +68,7 @@ public class DialogActivity extends AppCompatActivity {
         }
 
         TimePicker timePicker = findViewById(R.id.time_picker_dialog);
-        if(DateFormat.is24HourFormat(this)){
-            timePicker.setIs24HourView(true);
-        } else {
-            timePicker.setIs24HourView(false);
-        }
+        timePicker.setIs24HourView(DateFormat.is24HourFormat(this));
         timePicker.setVisibility(View.VISIBLE);
 
         Button change = findViewById(R.id.change_dialog_button);
@@ -88,7 +76,7 @@ public class DialogActivity extends AppCompatActivity {
             SharedPreferences savedConfiguration = getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
             SharedPreferences.Editor editor = savedConfiguration.edit();
             if (configurator == Configurator.wakeUpTimeKnownConf){
-                //get the time from time picker
+                //get time from time picker
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                     configurator.setAlarmHour(timePicker.getCurrentHour())
                                 .setAlarmMinutes(timePicker.getCurrentMinute());
@@ -105,43 +93,18 @@ public class DialogActivity extends AppCompatActivity {
                 configurator.calcBedTime(configurator.getAlarmTime(), cyclesValue, asleepMinutesValue)
                             .setBedHour(configurator.getBedTime().get(Calendar.HOUR_OF_DAY))
                             .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE));
-
                 configurator.setAlarmState(true);
+                editor.apply();
                 //update saved configuration file
-                saveChanges(null, -1);
                 //the new alarm must be registered in the system here for it to ring
                 //because the alarm switcher might be already checked so the listener won't record changes
                 Alarm alarm = new Alarm(configurator.getAlarmTime(), DialogActivity.this, configurator.getRequestCode());
                 alarm.register();
-
-            } /*else if (alarmType == 2) {
-                //get the time from time picker
-                int hour, minutes;
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    hour = timePicker.getCurrentHour();
-                    minutes = timePicker.getCurrentMinute();
-                } else {
-                    hour = timePicker.getHour();
-                    minutes = timePicker.getMinute();
-                }
-
-                //create a new bed time and notice the changes
-                configurator.buildBedTime(hour, minutes);
-                configurator.setConfChanged(true);
-
-                //create a new waking time
-                int cyclesValue = savedConfiguration.getInt(Configurator.CYCLES_INT_VALUE_KNOWN_BED_TIME, 6);
-                int asleepMinutesValue = savedConfiguration.getInt(Configurator.ASLEEP_INT_VALUE_KNOWN_BED_TIME, 14);
-                configurator.calculateWakingTime(configurator.getBedTime(), cyclesValue, asleepMinutesValue);
-                configurator.setHour(configurator.getHour());
-                configurator.setMinutes(configurator.getMinutes());
-
-                //update saved configuration file
-                editor.putInt(Configurator.ALARM_HOUR_KNOWN_BED_TIME, configurator.getHour());
-                editor.putInt(Configurator.ALARM_MINUTES_KNOWN_BED_TIME, configurator.getMinutes());
-            }*/
-            editor.apply();
-            finishAfterTransition();
+                configurator.setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis());
+                configurator.calcBedTimeTimeStamp(configurator.getAlarmTimeTimeStamp());
+                saveChanges(null, -1);
+            }
+            finish();
         });
     }
 
@@ -196,13 +159,17 @@ public class DialogActivity extends AppCompatActivity {
                 //build and set bed time
                 configurator.calcBedTime(configurator.getAlarmTime(), currentValue, configurator.getMinutesFallingAsleep())
                             .setBedHour(configurator.getBedTime().get(Calendar.HOUR_OF_DAY))
-                            .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE));
-
+                            .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE))
+                            .setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis());
+                configurator.calcBedTimeTimeStamp(configurator.getAlarmTimeTimeStamp());
             } else if (configurator.getRequestCode() == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE) {
                 //build the set alarm time
                 configurator.calcAlarmTime(configurator.getBedTime(), currentValue, configurator.getMinutesFallingAsleep())
                             .setAlarmHour(configurator.getAlarmTime().get(Calendar.HOUR_OF_DAY))
-                            .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE));
+                            .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE))
+                            .setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis());
+                Alarm alarm = new Alarm(configurator.getAlarmTime(), this, configurator.getRequestCode());
+                alarm.register();
             }
             saveChanges(configurator.getSleepCyclesKey(), currentValue);
             finishAfterTransition();
@@ -241,12 +208,15 @@ public class DialogActivity extends AppCompatActivity {
                 configurator.calcBedTime(configurator.getAlarmTime(), configurator.getSleepCycles(), currentValue)
                             .setBedHour(configurator.getBedTime().get(Calendar.HOUR_OF_DAY))
                             .setBedMinutes(configurator.getBedTime().get(Calendar.MINUTE));
-
+                configurator.calcBedTimeTimeStamp(configurator.getAlarmTimeTimeStamp());
             } else if (configurator == Configurator.bedTimeKnownConf) {
                 //build the saved bed time
                 configurator.calcAlarmTime(configurator.getBedTime(), configurator.getSleepCycles(), currentValue)
                             .setAlarmHour(configurator.getAlarmTime().get(Calendar.HOUR_OF_DAY))
-                            .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE));
+                            .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE))
+                            .setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis());
+                Alarm alarm = new Alarm(configurator.getAlarmTime(), this, configurator.getRequestCode());
+                alarm.register();
             }
             saveChanges(configurator.getMinutesFallingAsleepKey(), currentValue);
             finishAfterTransition();
@@ -272,9 +242,7 @@ public class DialogActivity extends AppCompatActivity {
             int currentValue = Integer.parseInt(String.valueOf(displayedValues[numberPicker.getValue()]));
             configurator.setNapDuration(currentValue);
             if(configurator.isConfigured()) {
-                Calendar currentTime = Calendar.getInstance();
-                saveChanges(configurator.getNapDurationKey(), currentValue);
-                configurator.calcAlarmTime(currentTime, currentValue)
+                configurator.calcAlarmTime(Calendar.getInstance(), currentValue)
                             .setAlarmHour(configurator.getAlarmTime().get(Calendar.HOUR_OF_DAY))
                             .setAlarmMinutes(configurator.getAlarmTime().get(Calendar.MINUTE));
 
@@ -289,6 +257,8 @@ public class DialogActivity extends AppCompatActivity {
                 i.putExtra(SongListActivity.CHECK_ALARM_TYPE, configurator.getRequestCode());
                 startActivity(i);
             }
+            configurator.setBedTimeTimeStamp(Calendar.getInstance().getTimeInMillis());
+            saveChanges(configurator.getNapDurationKey(), currentValue);
             finishAfterTransition();
         });
     }
@@ -308,6 +278,7 @@ public class DialogActivity extends AppCompatActivity {
                 editor.putInt(Configurator.ALARM_HOUR_NAP_TIME_KEY, configurator.getAlarmHour())
                       .putInt(Configurator.ALARM_MINUTES_NAP_TIME_KEY, configurator.getAlarmMinutes())
                       .putInt(Configurator.NAP_DURATION_KEY, configurator.getNapDuration())
+                      .putLong(Configurator.START_NAP_TIME_STAMP_KEY, configurator.getBedTimeTimeStamp())
                       .putBoolean(Configurator.ALARM_STATE_NAP_TIME_KEY, true)
                       .putBoolean(Configurator.IS_NAP_TIME_CONFIGURED_KEY, true);
             }
@@ -318,6 +289,8 @@ public class DialogActivity extends AppCompatActivity {
                   .putInt(configurator.getAlarmMinutesKey(), configurator.getAlarmMinutes())
                   .putBoolean(configurator.getAlarmStateKey(), true);
         }
+        editor.putLong(configurator.getAlarmRegistrationMomentKey(), configurator.getAlarmRegistrationMoment())
+                .putLong(configurator.getBedTimeTimeStampKey(), configurator.getBedTimeTimeStamp());
         editor.apply();
     }
 

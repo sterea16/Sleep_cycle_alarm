@@ -153,6 +153,7 @@ public class AlarmActivity extends AppCompatActivity {
         Calendar snoozeTime = Calendar.getInstance();
         Alarm alarm = new Alarm(snoozeTime, AlarmActivity.this, configurator.getRequestCode());
         alarm.snooze();
+
         Notification.unregisterScreenStateReceiver(this);
         Notification.stopRingtone();
         setCallersToFalse();
@@ -175,7 +176,7 @@ public class AlarmActivity extends AppCompatActivity {
                 "from alarm " + fromAlarmNotification + "\n" +
                 "from Snooze " + fromSnoozeNotification + "\n" +
                 "from full screen " + fromFullScreenIntent);
-        if(configurator.getAlarmState()) {
+        if(configurator.isAlarmOn()) {
             if(fromSnoozeNotification) {
                 Notification snoozeNotification = new Notification(this, Notification.SNOOZE, configurator.getRequestCode());
                 snoozeNotification.trigger();

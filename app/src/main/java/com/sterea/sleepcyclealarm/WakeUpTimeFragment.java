@@ -3,11 +3,10 @@ package com.sterea.sleepcyclealarm;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
-
 import androidx.core.content.res.ResourcesCompat;
-
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Objects;
@@ -55,13 +54,13 @@ public class WakeUpTimeFragment extends CustomFragment {
     }
 
     @Override
-    void setUpTimeInputTextViewText() {
+    void initTimeInputTextViewText() {
         TextView wakingTimeTextView = getView().findViewById(R.id.time_input_text_view);
         wakingTimeTextView.setText(getResources().getString(R.string.waking_time));
     }
 
     @Override
-    void setUpListeners() {
+    void initListeners() {
         alarmStateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             SharedPreferences savedConfiguration = getContext().getSharedPreferences(Configurator.SAVED_CONFIGURATION, Context.MODE_PRIVATE);
             if(isChecked){
@@ -86,11 +85,10 @@ public class WakeUpTimeFragment extends CustomFragment {
             i.putExtra(DialogActivity.LISTENER_TYPE, DialogActivity.TIME_LISTENER);
             startActivity(i);
         });
-        super.setUpListeners();
+        super.initListeners();
     }
 
     void setAlarm(){
-        /*alarmStatus.setTextColor(getResources().getColor(R.color.colorPrimaryDark));*/
         Alarm alarm = new Alarm(configurator.getAlarmTime(), getContext(), configurator.getRequestCode());
         alarm.register();
     }

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import java.util.Calendar;
 import java.util.Objects;
 import static android.content.Context.MODE_PRIVATE;
@@ -33,26 +32,44 @@ final class Alarm {
     static final String IS_SNOOZED = Alarm.class.getName() + "SNOOZED";
     static final String IS_DISMISSED = Alarm.class.getName() + "DISMISSED";
     static final String IS_SWIPED = Alarm.class.getName() + "SWIPED";
+    private Configurator configurator;
 
     Alarm (Calendar time, Context context, int requestCode){
         this.time = time;
         this.context = context;
         this.requestCode = requestCode;
+        setConfigurator(requestCode);
+    }
 
+    private void setConfigurator(int confType){
+        if(confType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE){
+            configurator = Configurator.wakeUpTimeKnownConf;
+        } else if (confType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE) {
+            configurator = Configurator.bedTimeKnownConf;
+        } else if ( confType == Configurator.NAP_TIME_ALARM_REQ_CODE) {
+            configurator = Configurator.napTimeConf;
+        }
     }
 
     void register(){
         AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(context).getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra(REQUEST_CODE_KEY, requestCode);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
-                intent, 0);
+        Intent triggerIntent = new Intent(context, AlarmReceiver.class);
+        triggerIntent.putExtra(REQUEST_CODE_KEY, requestCode);
+        PendingIntent triggerPendingIntent = PendingIntent.getBroadcast(context, requestCode,
+                triggerIntent, 0);
 
         if(time.before(Calendar.getInstance())){ //add 1 day to the input time if the user picks a time which is before the current time
             time.add(Calendar.DATE,1);
         }
-        Log.d("Alarm register()","alarm registered");
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pendingIntent);
+
+        configurator.setAlarmTimeTimeStamp(time.getTimeInMillis());
+        configurator.setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis());
+        Intent infoIntent = new Intent(context, MainActivity.class);
+        infoIntent.putExtra(MainActivity.REQUESTED_TAB, requestCode);
+        PendingIntent infoPendingIntent = PendingIntent.getActivity(context, - requestCode*requestCode, infoIntent, 0);
+        AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(time.getTimeInMillis(),infoPendingIntent);
+        alarmManager.setAlarmClock(alarmClockInfo, triggerPendingIntent);
+        updateConfiguration(true);
         settingRebootReceiver(true);
     }
 
@@ -64,8 +81,7 @@ final class Alarm {
                     intent, 0);
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
-        Log.d("Alarm cancel()","alarm canceled");
-        updateConfiguration();
+        updateConfiguration(false);
         settingRebootReceiver(false);
     }
 
@@ -73,20 +89,25 @@ final class Alarm {
         AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(context).getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(REQUEST_CODE_KEY, requestCode);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, requestCode,
+        PendingIntent triggerPendingIntent = PendingIntent.getBroadcast(context, requestCode,
                 intent, 0);
-        Log.d("Alarm snooze()", "alarm snoozed");
         time.add(Calendar.MINUTE, 1);
 
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time.getTimeInMillis(), pendingIntent);
+        Intent infoIntent = new Intent(context, MainActivity.class);
+        infoIntent.putExtra(MainActivity.REQUESTED_TAB, requestCode);
+        PendingIntent infoPendingIntent = PendingIntent.getActivity(context, - requestCode*requestCode, infoIntent, 0);
+        AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(time.getTimeInMillis(),infoPendingIntent);
+        alarmManager.setAlarmClock(alarmClockInfo, triggerPendingIntent);
 
+        configurator.setAlarmTimeTimeStamp(time.getTimeInMillis());
+        configurator.calcBedTimeTimeStamp(time.getTimeInMillis());
         SharedPreferences savedConfiguration = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = savedConfiguration.edit();
-        if(requestCode == Configurator.wakeUpTimeKnownConf.getRequestCode()){
-            editor.putBoolean(Configurator.SNOOZE_STATE_WAKE_UP_KNOWN_KEY, true);
-        } else if (requestCode == Configurator.bedTimeKnownConf.getRequestCode()){
-            editor.putBoolean((Configurator.SNOOZE_STATE_KNOWN_BED_TIME_KEY), true);
+        if(configurator != Configurator.napTimeConf) {
+            editor.putBoolean(configurator.getSnoozeStateKey(), true);
         }
+        editor.putLong(configurator.getAlarmTimeTimeStampKey(), configurator.getAlarmTimeTimeStamp());
+        editor.putLong(configurator.getBedTimeTimeStampKey(), configurator.getBedTimeTimeStamp());
         editor.apply();
 
         Notification.cancel(requestCode, context);
@@ -111,19 +132,17 @@ final class Alarm {
         }
     }
 
-    private void updateConfiguration(){
+    private void updateConfiguration(boolean state){
         SharedPreferences savedPreferences = context.getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         SharedPreferences.Editor editor = savedPreferences.edit();
-        if(requestCode == Configurator.wakeUpTimeKnownConf.getRequestCode()){
-            editor.putBoolean(Configurator.ALARM_STATE_WAKE_UP_KNOWN_KEY, false)
-                    .putBoolean(Configurator.SNOOZE_STATE_WAKE_UP_KNOWN_KEY, false);
-        } else if (requestCode == Configurator.bedTimeKnownConf.getRequestCode()){
-            editor.putBoolean(Configurator.ALARM_STATE_KNOWN_BED_TIME_KEY, false)
-                    .putBoolean((Configurator.SNOOZE_STATE_KNOWN_BED_TIME_KEY), false);
-        } else if (requestCode == Configurator.NAP_TIME_ALARM_REQ_CODE) {
-            editor.putBoolean(Configurator.ALARM_STATE_NAP_TIME_KEY, false)
-                    .putBoolean(Configurator.SNOOZE_STATE_NAP_TIME_KEY, false)
-                    .putBoolean(Configurator.IS_NAP_TIME_CONFIGURED_KEY, false);
+        editor.putBoolean(configurator.getAlarmStateKey(), state)
+                .putBoolean(configurator.getSnoozeStateKey(), state);
+        if(state)
+            editor.putLong(configurator.getAlarmTimeTimeStampKey(), configurator.getAlarmTimeTimeStamp());
+        if(configurator == Configurator.napTimeConf) {
+            editor.putBoolean(configurator.getIsConfiguredKey(), state);
+        } else {
+            editor.putLong(configurator.getAlarmRegistrationMomentKey(), configurator.getAlarmRegistrationMoment());
         }
         editor.apply();
     }

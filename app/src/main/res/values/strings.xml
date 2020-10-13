@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Sleep cycle alarm</string>
-    <string name="noAlarmSet">No alarm set</string>
+
 
     <!--Generals-->
     <string name="alarm">Alarm</string>
@@ -26,6 +26,13 @@
     <string name="choose_bed_time">Choose bed time</string>
     <string name="choose_song">Choose a ringtone</string>
     <string name="total_sleeping_time">Total sleeping time</string>
+
+    <!--Header-->
+    <string name="next_bed_time">Next bed time in:</string>
+    <string name="next_alarm_time">Alarm rings in:</string>
+    <string name="all_alarms_off">All alarms are off</string>
+    <string name="image_header_description">Header image</string>
+
 
     <!--AlarmActivity-->
     <string name="dismiss">Dismiss</string>
@@ -54,6 +61,7 @@
     <string name="nap_time_ends">Ends at</string>
     <string name="nap_time_duration">Duration</string>
     <string name="nap_time_choose_duration">Nap duration</string>
+    <string name="nap_ends_in">Nap ends in</string>
 
     <!--SetUpAlarmActivity-->
     <string name="noRingtoneSelected">No ringtone selected</string>
@@ -90,8 +98,8 @@
     <string name="channel_description_alarm">Make alarms sound and pop out.</string>
     <string name="channel_name_reminder">Bed time reminder notification and nap time reminder</string>
     <string name="channel_description_reminder">Notification which reminds that bed time is coming soon.</string>
-    <string name="channel_name_snooze">Snooze notification</string>
-    <string name="channel_description_snooze">Notifies when alarm is on snooze state.</string>
+    <string name="channel_name_snooze">Snooze or Nap time notification</string>
+    <string name="channel_description_snooze">Notifies when alarm is on snooze state or there is an ongoing nap time alarm.</string>
 
     <string name="notification_title_snooze">Alarm snoozed</string>
     <string name="notification_content_snooze">Alarm is snoozed for 5 minutes.</string>

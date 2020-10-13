@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2B2B2B</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#1B1C1C</color>
+    <color name="colorPrimary">#20323E</color>
+    <color name="colorPrimaryOld">#2B2B2B</color>
+    <color name="colorPrimaryDark">#12222C</color>
+    <color name="colorPrimaryDarkOld">#000000</color>
+    <color name="colorAccent">#254D65</color>
+    <color name="colorAccentOld">#1B1C1C</color>
     <color name="custom_gray">#959497</color>
     <color name="custom_green">#388E3C</color>
     <color name="colorSwitchOff">#C7CBCC</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorHeader">#0c3446</color>
+    <color name="colorProgressStart">#52FFAB00</color>
+    <color name="colorProgressEnd">#FFD740</color>
+    <color name="colorProgressHalf">#AEFFAB00</color>
 </resources>

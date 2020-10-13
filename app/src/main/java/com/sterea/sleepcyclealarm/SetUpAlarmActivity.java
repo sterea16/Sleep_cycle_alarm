@@ -80,11 +80,7 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         });
 
         final TimePicker timePicker = findViewById(R.id.spinner_time_picker);
-        if(DateFormat.is24HourFormat(this)){
-            timePicker.setIs24HourView(true);
-        } else {
-            timePicker.setIs24HourView(false);
-        }
+        timePicker.setIs24HourView(DateFormat.is24HourFormat(this));
 
         if(alarmType == Configurator.BED_TIME_KNOWN_ALARM_REQ_CODE)
             timePicker.setVisibility(View.GONE);
@@ -129,10 +125,12 @@ public class SetUpAlarmActivity extends AppCompatActivity {
                         .setConfChanged(true)
                         .setConfigured(true)
                         .setAlarmState(true)
-                        .updateSavedConfiguration(savedConfiguration, configurator.getRequestCode());
+                        .setAlarmRegistrationMoment(Calendar.getInstance().getTimeInMillis())
+                        .updateSavedConfiguration(savedConfiguration);
 
             Alarm alarm = new Alarm(configurator.getAlarmTime(), SetUpAlarmActivity.this, configurator.getRequestCode());
             alarm.register();
+            configurator.calcBedTimeTimeStamp(configurator.getAlarmTimeTimeStamp());
             finish();
         });
 
@@ -150,29 +148,6 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         if(configurator == Configurator.bedTimeKnownConf)
             title.setVisibility(View.GONE);
 
-        /*if (isConfigured) {
-            create.setText(getResources().getString(R.string.change));
-            sleepCyclesSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerCyclesKey(), 0));
-            minutesAsleepSpinner.setSelection(savedConfiguration.getInt(configurator.getItemPositionSpinnerMinutesAsleepKey(), 0));
-
-            if(alarmType == Configurator.WAKE_UP_TIME_KNOWN_ALARM_REQ_CODE) {
-                title.setVisibility(View.VISIBLE);
-                title.setText(getResources().getString(R.string.wakingUpTime));
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    timePicker.setCurrentHour(savedConfiguration.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP_KEY, 0));
-                    timePicker.setCurrentMinute(savedConfiguration.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP_KEY, 0));
-                } else {
-                    timePicker.setHour(savedConfiguration.getInt(Configurator.ALARM_HOUR_KNOWN_WAKE_UP_KEY, 0));
-                    timePicker.setMinute(savedConfiguration.getInt(Configurator.ALARM_MINUTES_KNOWN_WAKE_UP_KEY, 0));
-                }
-            }
-            if(configurator.getRingtoneName() == null)
-                configurator.setRingtoneName(savedConfiguration.getString(configurator.getRingtoneNameKey(), getResources().getString(R.string.noRingtoneSelected)));
-
-            updateSongView();
-            return;
-        }*/
-
         create.setText(getResources().getString(R.string.createAlarm));
         updateSongView();
 
@@ -181,7 +156,6 @@ public class SetUpAlarmActivity extends AppCompatActivity {
         if(firstUse){
             showTips();
         }
-
     }
 
     private void updateSongView(){
