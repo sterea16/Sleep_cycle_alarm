@@ -125,7 +125,7 @@ public abstract class CustomFragment extends Fragment {
         }
     }
 
-    private void getConfiguration(){
+    void getConfiguration(){
         SharedPreferences savedConfiguration = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         int sleepCycles = savedConfiguration.getInt(configurator.getSleepCyclesKey(), 6);
         int minutesAsleep = savedConfiguration.getInt(configurator.getMinutesFallingAsleepKey(), 14);

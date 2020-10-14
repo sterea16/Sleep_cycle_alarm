@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static class ScreenSlidePagerAdapter extends FragmentStateAdapter{
+    static class ScreenSlidePagerAdapter extends FragmentStateAdapter{
 
         public ScreenSlidePagerAdapter(@NonNull FragmentActivity fragmentActivity) {
             super(fragmentActivity);

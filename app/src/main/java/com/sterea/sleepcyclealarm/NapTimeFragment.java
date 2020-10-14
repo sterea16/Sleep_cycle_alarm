@@ -57,7 +57,7 @@ public class NapTimeFragment extends Fragment {
         displayViews(configurator.isConfigured());
     }
 
-    private void getConfiguration(){
+    void getConfiguration(){
         SharedPreferences savedConfiguration = Objects.requireNonNull(getContext()).getSharedPreferences(Configurator.SAVED_CONFIGURATION, MODE_PRIVATE);
         int alarmHour = savedConfiguration.getInt(configurator.getAlarmHourKey(), 0);
         int alarmMinutes = savedConfiguration.getInt(configurator.getAlarmMinutesKey(), 0);
@@ -74,7 +74,7 @@ public class NapTimeFragment extends Fragment {
     }
 
     @UiThread
-    private void displayViews(boolean isConfigured){
+    void displayViews(boolean isConfigured){
         String title;
         if(isConfigured){
             title = getContext().getString(R.string.nap_time_title_nap_set);
