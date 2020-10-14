@@ -7,14 +7,14 @@ It also calculates the right moment to wake up based on the moment of fall aslee
 
 #### App home screen
 <p align="center">
-  <img src="https://raw.githubusercontent.com/sterea16/Sleep_cycle_alarm/master/app_gif_1.gif">
+  <img src="https://github.com/sterea16/Sleep_cycle_alarm/blob/master/readmeFiles/app_gif_1.gif?raw=true">
 </p>
 
 #### Setting up an alarm demo
 <details>
 <summary>Click to expand</summary>
 <p align="center">
-  <img src="https://github.com/sterea16/Sleep_cycle_alarm/blob/master/app_gif_2.gif?raw=true">
+  <img src=https://github.com/sterea16/Sleep_cycle_alarm/blob/master/readmeFiles/app_gif_2.gif?raw=true>
 </p>
 </details>
 
@@ -22,6 +22,6 @@ It also calculates the right moment to wake up based on the moment of fall aslee
 <details>
 <summary>Click to expand</summary>
 <p align="center">
-  <img src=https://github.com/sterea16/Sleep_cycle_alarm/blob/master/app_gif_3.gif?raw=true>
+  <img src=https://github.com/sterea16/Sleep_cycle_alarm/blob/master/readmeFiles/app_gif_3.gif?raw=true>
 </p>
 </details>
